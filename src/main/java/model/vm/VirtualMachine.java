@@ -6,6 +6,12 @@ import org.libvirt.StorageVol;
 
 import java.util.UUID;
 
+/*
+*  Layer between the horrendous libVirt XML domain object
+*  and our VM instance object
+*
+ */
+
 public class VirtualMachine {
 
     private int id;                         // unique ID when instance is running

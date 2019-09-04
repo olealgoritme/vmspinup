@@ -22,13 +22,17 @@ import java.util.concurrent.TimeUnit;
 @SpringBootApplication
 public class TestingGround {
 
+    private static Connect conn;
+    private static ConnectAuth ca;
+    private static Domain d;
 
     /**
      * Top-level command that just prints help.
      */
     @CommandLine.Command(name = "VMSpinUp by xuw", description = "",
-            footer = {"", "Press Ctrl-X to exit."},
+            footer = {"", "Press Ctrl-D to exit."},
             subcommands = {MyCommand.class, ClearScreen.class})
+
     static class CliCommands implements Runnable {
         LineReaderImpl reader;
         PrintWriter out;
@@ -48,28 +52,44 @@ public class TestingGround {
     /**
      * A command with some options to demonstrate completion.
      */
-    @CommandLine.Command(name = "startVM", mixinStandardHelpOptions = true, version = "1.0",
+    @CommandLine.Command(name = "vmlist", mixinStandardHelpOptions = true, version = "1.0",
             description = "")
 
     static class MyCommand implements Runnable {
-        @CommandLine.Option(names = {"-v", "--verbose"})
-        private boolean[] verbosity = {};
-
-        @CommandLine.Option(names = {"-d", "--duration"})
-        private int amount;
-
-        @CommandLine.Option(names = {"-u", "--timeUnit"})
-        private TimeUnit unit;
 
         @CommandLine.ParentCommand
         CliCommands parent;
 
         public void run() {
-            if (verbosity.length > 0) {
-                parent.out.printf("Hi there. You asked for %d %s.%n", amount, unit);
-            } else {
-                parent.out.println("hi!");
+
+                parent.out.println();
+
+            int[] ids = new int[0];
+            try {
+                ids = conn.listDomains();
+
+                parent.out.println(String.format("%15s %3s %3s %3s %3s %3s %3s %3s %3s", "VM Instance", "|", "ID", "|", "OS", "|", "RAM", "|", "vCPUs"));
+                parent.out.println(String.format("%s", "-----------------------------------------------------------------------"));
+
+            for (int i : ids) {
+                parent.out.println(String.format("%15s %3s %3s %3s %3s %3s %3s %2.5s %3s", d.getName(), "|", d.getID(), "|", d.getOSType(), "|", (d.getMaxMemory() / 1024 / 1024) + " GB", "|", d.getMaxVcpus()));
+
+                /*parent.out.println("UUID = " + d.getUUIDString());
+                parent.out.println("Active = " + (d.isActive()));
+                parent.out.println("Persistent = " + d.isPersistent());
+
+                DomainInfo df = d.getInfo();
+                parent.out.println("CPUTime = " + df.cpuTime);
+                parent.out.println("state = " + df.state); */
             }
+                parent.out.println(String.format("%s", "-----------------------------------------------------------------------"));
+                parent.out.println("\nTotal instances: " + ids.length + "\n");
+
+
+            } catch (LibvirtException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
@@ -104,7 +124,7 @@ public class TestingGround {
                 String prompt = "vmSpinUp> ";
                 String rightPrompt = null;
 
-                // start the shell and process input until the user quits with Ctl-X
+                // start the shell and process input until the user quits with Ctrl-D
                 String line;
                 while (true) {
                     try {
@@ -127,10 +147,6 @@ public class TestingGround {
 
             SpringApplication.run(TestingGround.class, args);
 
-
-            Connect conn;
-            ConnectAuth ca;
-            Domain d;
             try {
 
                 ca = new ConnectAuthDefault();
