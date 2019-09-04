@@ -2,10 +2,12 @@ package model.vm;
 
 import model.hypervisors.HyperVisor;
 
+import java.util.UUID;
+
 public class VirtualMachine {
 
-    private int id;                // unique ID
-    private String hostname;       // hostname
+    private int id;                // unique ID when instance is running
+    private String name;           // name
     private String uuid;           // 128 bit long value (A UUID is made of up of hex digits  (4 chars each) along with 4 “-” symbols which make its length equal to 36 characters.)
 
     private int vCPU;              // vCPU count
@@ -18,6 +20,8 @@ public class VirtualMachine {
 
 
     public VirtualMachine() {
+        // start off by creating a random 128 bit unsigned byte as UUID
+        this.uuid = UUID.randomUUID().toString();
     }
 
     public String getStorage_path() {
@@ -60,12 +64,12 @@ public class VirtualMachine {
         this.uuid = uuid;
     }
 
-    public String getHostname() {
-        return hostname;
+    public String getName() {
+        return name;
     }
 
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getId() {
