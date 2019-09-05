@@ -91,7 +91,8 @@ public class VirtualMachine {
         this.hyperVisor = hyperVisor;
     }
 
-    public VirtualMachine build() {
+    public VirtualMachine createVM() {
+        if(this.uuid == null) uuid = UUID.randomUUID().toString();
         return new VirtualMachine();
     }
 }
