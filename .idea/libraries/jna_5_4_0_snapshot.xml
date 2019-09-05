@@ -1,8 +1,6 @@
 <component name="libraryTable">
   <library name="jna-5.4.0-snapshot">
-    <CLASSES>
-      <root url="jar://$USER_HOME$/code/java/spinup/lib/jna-5.4.0-snapshot.jar!/" />
-    </CLASSES>
+    <CLASSES />
     <JAVADOC />
     <SOURCES />
   </library>
