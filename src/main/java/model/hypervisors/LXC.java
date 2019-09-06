@@ -1,6 +1,9 @@
 package model.hypervisors;
 
-public class LXC extends AbstractHyperVisor {
+import java.net.URI;
+import java.net.URISyntaxException;
+
+public class LXC extends HyperVisor {
 
     private static LXC instance;
 
@@ -8,6 +11,11 @@ public class LXC extends AbstractHyperVisor {
         super();
         this.type = "LXC";
         this.name = "lxc";
+        try {
+            this.uri = new URI("lxc:///");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     public LXC getInstance() {

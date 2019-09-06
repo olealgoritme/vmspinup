@@ -1,6 +1,6 @@
 package model.hypervisors;
 
-public class Xen extends AbstractHyperVisor {
+public class Xen extends HyperVisor {
 
     private static Xen instance;
 

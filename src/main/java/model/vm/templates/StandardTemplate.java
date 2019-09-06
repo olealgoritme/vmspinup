@@ -23,10 +23,10 @@ public class StandardTemplate {
     }
 
     public String buildBareMetalBoot() {
-        String name =   "bare-metal-test";
-        String mem =    "4194304";
-        String vcpu =   "4";
-        String qcow =   "/home/xuw/Servers/test_bare_metal.qcow2";
+        String name =   "ubuntu-1";
+        String mem =    "2097152";
+        String vcpu =   "2";
+        String qcow =   "/home/xuw/servers/test_bare_metal.qcow2";
 
         String XML =
                 "<domain type='kvm'>"+ "\n" +
@@ -62,8 +62,8 @@ public class StandardTemplate {
         String uuid = UUID.randomUUID().toString();
         String mem =    "4194304";
         String vcpu =   "4";
-        String qcow =   "/home/xuw/Servers/test_bare_metal.qcow2";
-        String cdrom =  "/home/xuw/Servers/ISO/ubuntu-18.04.3-server-amd64-unattended.iso";
+        String qcow =   "/home/xuw/servers/test_bare_metal.qcow2";
+        String cdrom =  "/home/xuw/servers/ISO/ubuntu-18.04.3-server-amd64-unattended.iso";
 
         String XML =
 "<domain type='kvm'>"+ "\n" +

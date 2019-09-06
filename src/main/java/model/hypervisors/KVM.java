@@ -1,13 +1,21 @@
 package model.hypervisors;
 
-public class KVM extends AbstractHyperVisor {
+import java.net.URI;
+import java.net.URISyntaxException;
+
+public class KVM extends HyperVisor {
 
     private static KVM instance;
 
-    private KVM() {
+    public KVM() {
         super();
         this.name = "KVM";
         this.type = "kvm";
+        try {
+            this.uri = new URI("qemu:///system");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     public static KVM getInstance() {

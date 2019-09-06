@@ -13,8 +13,28 @@
     <groupId>com.lemon</groupId>
     <artifactId>vmspinup</artifactId>
     <version>0.1-SNAPSHOT</version>
+
+    <properties>
+        <!-- Spring boot main class -->
+        <start-class>app.TestingGround</start-class>
+    </properties>
+
     <build>
     <plugins>
+       <!-- <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+                <archive>
+                    <manifest>
+                        <mainClass>app.TestingGround</mainClass>
+                    </manifest>
+                </archive>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+            </configuration>
+        </plugin> -->
+
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
@@ -26,6 +46,17 @@
         <plugin>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+                <fork>true</fork>
+                <mainClass>${start-class}</mainClass>
+            </configuration>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>repackage</goal>
+                    </goals>
+                </execution>
+            </executions>
         </plugin>
     </plugins>
     </build>

@@ -1,11 +1,11 @@
 package webservice;
 
-public class Hello {
+public class Response {
 
     private final long id;
     private final String content;
 
-    Hello(long id, String content) {
+    Response(long id, String content) {
         this.id = id;
         this.content = content;
     }
