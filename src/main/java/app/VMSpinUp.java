@@ -36,19 +36,19 @@ public class VMSpinUp implements VMCommands, VirtCommands {
         try {
             getInstance();
             domain = lvConn.domainLookupByName(vmName);
-        return new VirtualMachine()
-                .withHyperVisor(DEFAULT_HYPERVISOR)
-                .withUUID(UUID.fromString(domain.getUUIDString()))
-                .withId(domain.getID())
-                .withName(domain.getName())
-                .withCPUs(domain.getMaxVcpus())
-                .withRamAmount(domain.getMaxMemory())
-                .build();
+            vm = new VirtualMachine();
+            vm.setHyperVisor(DEFAULT_HYPERVISOR);
+            vm.setUUID(UUID.fromString(domain.getUUIDString()));
+            vm.setID(domain.getID());
+            vm.setName(domain.getName());
+            vm.setvCPU(domain.getMaxVcpus());
+            vm.setRamAmount(domain.getMaxMemory());
 
     } catch (LibvirtException e) {
             e.printStackTrace();
             return null;
         }
+            return vm;
     }
 
     @Override
@@ -56,18 +56,18 @@ public class VMSpinUp implements VMCommands, VirtCommands {
         try {
             getInstance();
             domain = lvConn.domainLookupByID(id);
-            return new VirtualMachine()
-                    .withHyperVisor(DEFAULT_HYPERVISOR)
-                    .withUUID(UUID.fromString(domain.getUUIDString()))
-                    .withId(domain.getID())
-                    .withName(domain.getName())
-                    .withCPUs(domain.getMaxVcpus())
-                    .withRamAmount(domain.getMaxMemory())
-                    .build();
+            vm = new VirtualMachine();
+            vm.setHyperVisor(DEFAULT_HYPERVISOR);
+            vm.setUUID(UUID.fromString(domain.getUUIDString()));
+            vm.setID(domain.getID());
+            vm.setName(domain.getName());
+            vm.setvCPU(domain.getMaxVcpus());
+            vm.setRamAmount(domain.getMaxMemory());
         } catch (LibvirtException e) {
             e.printStackTrace();
             return null;
         }
+            return vm;
     }
 
     @Override
@@ -75,25 +75,26 @@ public class VMSpinUp implements VMCommands, VirtCommands {
         try {
             getInstance();
             domain = lvConn.domainLookupByUUID(uuid);
-            return new VirtualMachine()
-                    .withHyperVisor(DEFAULT_HYPERVISOR)
-                    .withUUID(UUID.fromString(domain.getUUIDString()))
-                    .withId(domain.getID())
-                    .withName(domain.getName())
-                    .withCPUs(domain.getMaxVcpus())
-                    .withRamAmount(domain.getMaxMemory())
-                    .build();
+            vm = new VirtualMachine();
+                    vm.setHyperVisor(DEFAULT_HYPERVISOR);
+                    vm.setUUID(UUID.fromString(domain.getUUIDString()));
+                    vm.setID(domain.getID());
+                    vm.setName(domain.getName());
+                    vm.setvCPU(domain.getMaxVcpus());
+                    vm.setRamAmount(domain.getMaxMemory());
+
         } catch (LibvirtException e) {
             e.printStackTrace();
             return null;
         }
+            return vm;
     }
 
     @Override
     public boolean vmDestroy(VirtualMachine vm) {
         try {
             getInstance();
-            lvConn.domainLookupByUUID(vm.getUUID());
+            lvConn.domainLookupByName(vm.getName()).destroy();
         } catch (LibvirtException e) {
             e.printStackTrace();
             return false;
@@ -101,12 +102,24 @@ public class VMSpinUp implements VMCommands, VirtCommands {
         return true;
     }
 
+    @Override
+    public boolean vmCreateFromXML(String xml) {
+        try {
+            getInstance();
+            lvConn.domainCreateXML(xml, 0);
+        } catch (LibvirtException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 
     @Override
     public boolean vmCreate(VirtualMachine vm) {
         try {
             getInstance();
-            lvConn.domainCreateXML(vm.toXML(), 0);
+            String xml = vm.toXML();
+            lvConn.domainCreateXML(xml, 0);
         } catch (LibvirtException e) {
             e.printStackTrace();
             return false;
@@ -125,13 +138,28 @@ public class VMSpinUp implements VMCommands, VirtCommands {
     }
 
     @Override
-    public boolean vmPause(VirtualMachine vm) {
-        return false;
+    public boolean vmSuspend(VirtualMachine vm) {
+
+        try {
+            getInstance();
+            lvConn.domainLookupByName(vm.getName()).suspend();
+        } catch (LibvirtException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     @Override
     public boolean vmResume(VirtualMachine vm) {
-        return false;
+        try {
+            getInstance();
+            lvConn.domainLookupByName(vm.getName()).resume();
+        } catch (LibvirtException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     @Override

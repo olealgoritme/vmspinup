@@ -19,13 +19,7 @@ public class CmdVmCreate implements Runnable {
     @Override
     public void run() {
 
-
-            VirtualMachine vm = new VirtualMachine()
-                                .withHyperVisor(KVM.getInstance())
-                                .withName("ubuntu-1")
-                                .withRamAmount(2097152)
-                                .withCPUs(2)
-                                .build();
+            VirtualMachine vm = new VirtualMachine("ubuntu-1", 2097152, 2, null);
             VMSpinUp.getInstance().vmCreate(vm);
 
     }

@@ -7,8 +7,9 @@ public interface VMCommands {
     /* standard libvirt/VM commands */
     boolean vmDestroy(VirtualMachine vm);
     boolean vmCreate(VirtualMachine vm);
+    boolean vmCreateFromXML(String xml);
     boolean vmShutdown(VirtualMachine vm);
-    boolean vmPause(VirtualMachine vm);
+    boolean vmSuspend(VirtualMachine vm);
     boolean vmResume(VirtualMachine vm);
     boolean vmStart(VirtualMachine vm);
 

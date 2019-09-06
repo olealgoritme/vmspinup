@@ -22,8 +22,10 @@ import java.io.PrintWriter;
                 CmdVmCreate.class,
                 CmdVmDestroy.class,
                 CmdVmList.class,
+                CmdVmResume.class,
                 CmdVmShutdown.class,
-                CmdVmStart.class,})
+                CmdVmStart.class,
+                CmdVmSuspend.class})
 
 
 

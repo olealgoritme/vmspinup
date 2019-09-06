@@ -34,6 +34,46 @@ public class VirtualMachine {
     public VirtualMachine() {
     }
 
+    // minimum configuration
+    public VirtualMachine(String name, long ramAmount, int vCPU, StorageVolume storageVolume) {
+        this.name = name;
+        this.ramAmount = ramAmount;
+        this.vCPU = vCPU;
+        this.storageVolume = storageVolume;
+    }
+
+    public void setHyperVisor(HyperVisor hyperVisor) {
+        this.hyperVisor = hyperVisor;
+    }
+
+    public void setID(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRamAmount(long ramAmount) {
+        this.ramAmount = ramAmount;
+    }
+
+    public void setStorageAmount(int storageAmount) {
+        this.storageAmount = storageAmount;
+    }
+
+    public void setStorageVolume(StorageVolume storageVolume) {
+        this.storageVolume = storageVolume;
+    }
+
+    public void setUUID(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public void setvCPU(int vCPU) {
+        this.vCPU = vCPU;
+    }
+
     public HyperVisor getHyperVisor() {
         return this.hyperVisor;
     }
@@ -63,49 +103,12 @@ public class VirtualMachine {
         return this.storageVolume;
     }
 
-    public VirtualMachine withCPUs(int vCPU) {
-        this.vCPU = vCPU;
-        return this;
-    }
-
-    public VirtualMachine withName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public VirtualMachine withId(int id) {
-        this.id = id;
-        return this;
-    }
-
-    public VirtualMachine withUUID(UUID uuid) {
-        this.uuid = uuid;
-        return this;
-    }
-
-    public VirtualMachine withHyperVisor(HyperVisor hyperVisor) {
-        this.hyperVisor = hyperVisor;
-        return this;
-    }
-
-    public VirtualMachine withStorageVolume(StorageVolume storageVolume) {
-        this.storageVolume = storageVolume;
-        return this;
-    }
-    public VirtualMachine withRamAmount(long ramAmount) {
-        this.ramAmount = ramAmount;
-        return this;
-    }
-
     public String toXML() {
-            String vmName        = this.name;
-            long ramAmount       = this.ramAmount;
-            int vCPU             = this.vCPU;
-            StorageVolume volume = new StorageVolume("/home/xuw/servers/test_bare_metal.qcow2");
 
-            String XML =
-                    "<domain type='kvm'>"+ "\n" +
-                            "<name>%%s</name>"+  "\n" +
+            storageVolume = new StorageVolume("/home/xuw/servers/test_bare_metal.qcow2");
+
+            String XML =    "<domain type='kvm'>"+ "\n" +
+                            "<name>%s</name>"+  "\n" +
                             "<memory unit='KiB'>%s</memory>"+ "\n" +
                             "<vcpu>%s</vcpu>"+ "\n" +
                             "<os>"+ "\n" +
@@ -128,12 +131,8 @@ public class VirtualMachine {
                             "</devices>"+ "\n" +
                             "</domain>";
 
-            return String.format(XML, vmName, ramAmount, vCPU, volume);
+            return String.format(XML, this.name, this.ramAmount, this.vCPU, this.storageVolume.getPath());
     }
 
-    public VirtualMachine build() {
-        if(this.uuid == null) uuid = UUID.randomUUID();
-        return new VirtualMachine();
-    }
 
 }
