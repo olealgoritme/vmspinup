@@ -1,7 +1,12 @@
 package com.lemon.vmspinup.model.vm;
 
+import com.lemon.vmspinup.app.VMSpinUp;
 import com.lemon.vmspinup.model.hypervisor.HyperVisor;
+import com.lemon.vmspinup.model.listeners.VMStateListener;
+import com.lemon.vmspinup.model.states.VMState;
 import com.lemon.vmspinup.model.storage.StorageVolume;
+import org.libvirt.DomainInfo;
+import org.libvirt.event.DomainEventType;
 
 import java.util.UUID;
 
@@ -27,8 +32,9 @@ public class VirtualMachine {
     private int storageAmount;              // storage amount (for creating!)
     private StorageVolume storageVolume;       // storage volume image path
     private HyperVisor hyperVisor;          // HyperVisor type
-    private boolean persistent;              // persistent configuration (can later be deployed)
 
+    private VMStateListener vmStateListener;
+    private DomainInfo.DomainState vmState = DomainInfo.DomainState.VIR_DOMAIN_NOSTATE;
 
     public VirtualMachine() {
     }
@@ -102,19 +108,13 @@ public class VirtualMachine {
         return this.storageVolume;
     }
 
-    public boolean isPersistent() {
-        return persistent;
-    }
-
-    public void setPersistent(boolean persistent) {
-        this.persistent = persistent;
-    }
     public String toXML() {
 
             storageVolume = new StorageVolume("/home/xuw/servers/test_bare_metal.qcow2");
 
             String XML =    "<domain type='kvm'>"+ "\n" +
                             "<name>%s</name>"+  "\n" +
+                            "<timer name='kvmclock' present='yes'/>" + "\n" +
                             "<memory unit='KiB'>%s</memory>"+ "\n" +
                             "<vcpu>%s</vcpu>"+ "\n" +
                             "<os>"+ "\n" +
@@ -141,5 +141,19 @@ public class VirtualMachine {
     }
 
 
+    public VMStateListener getVMStateListener() {
+        return vmStateListener;
+    }
 
+    public void setVMStateListener(VMStateListener vmStateListener) {
+        this.vmStateListener = vmStateListener;
+    }
+
+    public DomainInfo.DomainState getVmState() {
+        return vmState;
+    }
+
+    public void setVmState(DomainInfo.DomainState vmState) {
+        this.vmState = vmState;
+    }
 }

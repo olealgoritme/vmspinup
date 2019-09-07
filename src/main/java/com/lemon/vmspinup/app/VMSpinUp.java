@@ -6,8 +6,12 @@ import com.lemon.vmspinup.model.hypervisor.KVM;
 import com.lemon.vmspinup.model.hypervisor.LXC;
 import com.lemon.vmspinup.model.commands.VMCommands;
 import com.lemon.vmspinup.model.commands.VirtCommands;
+import com.lemon.vmspinup.model.listeners.VMStateListener;
 import com.lemon.vmspinup.model.vm.VirtualMachine;
 import org.libvirt.*;
+import org.libvirt.event.DomainEvent;
+import org.libvirt.event.DomainEventType;
+import org.libvirt.event.LifecycleListener;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -15,7 +19,7 @@ import java.util.UUID;
 public class VMSpinUp implements VMCommands, VirtCommands {
 
     private static VMSpinUp VMSpinUp;
-    public static HyperVisor DEFAULT_HYPERVISOR = KVM.getInstance();
+    private static HyperVisor DEFAULT_HYPERVISOR = KVM.getInstance();
     private static VirtualMachine vm;
 
     // LV
@@ -39,6 +43,7 @@ public class VMSpinUp implements VMCommands, VirtCommands {
             getInstance();
             domain = lvConn.domainLookupByName(vmName);
             vm = new VirtualMachine();
+            vm.setVmState(domain.getEventStatus());
             vm.setHyperVisor(DEFAULT_HYPERVISOR);
             vm.setUUID(UUID.fromString(domain.getUUIDString()));
             vm.setID(domain.getID());
@@ -59,6 +64,7 @@ public class VMSpinUp implements VMCommands, VirtCommands {
             getInstance();
             domain = lvConn.domainLookupByID(id);
             vm = new VirtualMachine();
+            vm.setVmState(domain.getEventStatus());
             vm.setHyperVisor(DEFAULT_HYPERVISOR);
             vm.setUUID(UUID.fromString(domain.getUUIDString()));
             vm.setID(domain.getID());
@@ -78,12 +84,13 @@ public class VMSpinUp implements VMCommands, VirtCommands {
             getInstance();
             domain = lvConn.domainLookupByUUID(uuid);
             vm = new VirtualMachine();
-                    vm.setHyperVisor(DEFAULT_HYPERVISOR);
-                    vm.setUUID(UUID.fromString(domain.getUUIDString()));
-                    vm.setID(domain.getID());
-                    vm.setName(domain.getName());
-                    vm.setvCPU(domain.getMaxVcpus());
-                    vm.setRamAmount(domain.getMaxMemory());
+            vm.setVmState(domain.getEventStatus());
+            vm.setHyperVisor(DEFAULT_HYPERVISOR);
+            vm.setUUID(UUID.fromString(domain.getUUIDString()));
+            vm.setID(domain.getID());
+            vm.setName(domain.getName());
+            vm.setvCPU(domain.getMaxVcpus());
+            vm.setRamAmount(domain.getMaxMemory());
 
         } catch (LibvirtException e) {
             e.printStackTrace();
@@ -121,7 +128,62 @@ public class VMSpinUp implements VMCommands, VirtCommands {
         try {
             getInstance();
             String xml = vm.toXML();
-            lvConn.domainCreateXML(xml, 0);
+            domain = lvConn.domainCreateXML(xml, 0);
+        } catch (LibvirtException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            addListener(vm,domain);
+        }
+        return true;
+    }
+
+
+    private void addListener(VirtualMachine vm, Domain domain) {
+        if(vm.getVMStateListener() != null) {
+            VMStateListener listener = vm.getVMStateListener();
+            try {
+                domain.addLifecycleListener((domain1, event) -> {
+
+                    if (event.getType() == DomainEventType.DEFINED) {
+                        vm.setVmState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
+                        listener.onCreated(vm);
+
+                    } else if (event.getType() == DomainEventType.STARTED) {
+                        vm.setVmState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
+                        listener.onStarted(vm);
+
+                    } else if (event.getType() == DomainEventType.SUSPENDED) {
+                        vm.setVmState(DomainInfo.DomainState.VIR_DOMAIN_PAUSED);
+                        listener.onSuspended(vm);
+
+                    } else if (event.getType() == DomainEventType.RESUMED) {
+                        vm.setVmState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
+                        listener.onResumed(vm);
+
+                    } else if (event.getType() == DomainEventType.SHUTDOWN) {
+                        vm.setVmState(DomainInfo.DomainState.VIR_DOMAIN_SHUTDOWN);
+                        listener.onShutdown(vm);
+
+                    } else if (event.getType() == DomainEventType.CRASHED) {
+                        vm.setVmState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
+                        listener.onCrashed(vm);
+                    }
+                    return 0;
+                });
+            } catch (LibvirtException ex) {
+                ex.printStackTrace();
+            }
+
+        }
+    }
+
+    @Override
+    public boolean vmDefinePersistent(VirtualMachine vm) {
+        try {
+            getInstance();
+            String xml = vm.toXML();
+            lvConn.domainDefineXML(xml);
         } catch (LibvirtException e) {
             e.printStackTrace();
             return false;
@@ -131,7 +193,15 @@ public class VMSpinUp implements VMCommands, VirtCommands {
 
     @Override
     public boolean vmStart(VirtualMachine vm) {
-        return false;
+        try {
+            getInstance();
+            String xml = vm.toXML();
+            lvConn.domainCreateLinux(xml, 0);
+        } catch (LibvirtException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -141,7 +211,6 @@ public class VMSpinUp implements VMCommands, VirtCommands {
 
     @Override
     public boolean vmSuspend(VirtualMachine vm) {
-
         try {
             getInstance();
             lvConn.domainLookupByName(vm.getName()).suspend();

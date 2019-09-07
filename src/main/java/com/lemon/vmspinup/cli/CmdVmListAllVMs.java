@@ -12,20 +12,16 @@ import java.util.ArrayList;
 public class CmdVmListAllVMs implements Runnable, VMList {
 
     @CommandLine.ParentCommand
-
-    private ArrayList<VirtualMachine> vmList;
     private CliCommands parent = null;
 
     @Override
     public void run() {
-        while(!Thread.currentThread().isInterrupted()) {
             this.vmListAllVMs();
-        }
     }
 
     @Override
     public void vmListAllVMs() {
-        vmList = VMSpinUp.getInstance().listVMs();
+        ArrayList<VirtualMachine> vmList = VMSpinUp.getInstance().listVMs();
 
         parent.out.println(String.format("%15s %3s %3s %3s %3s %3s %3s %3s %3s %3s %3s", "VM Instance", "|", "ID", "|", "OS", "|", "RAM", "|", "vCPUs", "|", "STATE"));
         parent.out.println(String.format("%s", "-----------------------------------------------------------------------"));

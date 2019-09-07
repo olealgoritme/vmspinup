@@ -16,12 +16,10 @@ public class CmdVmShutdown implements Runnable, VMShutdown {
 
     @Override
     public void run() {
-        while(!Thread.currentThread().isInterrupted()) {
             VMSpinUp vmSpinUp = VMSpinUp.getInstance();
             VirtualMachine vm;
             vm = vmSpinUp.vmLookupByName("ubuntu-1");
             this.vmShutdown(vm);
-        }
     }
 
     @Override

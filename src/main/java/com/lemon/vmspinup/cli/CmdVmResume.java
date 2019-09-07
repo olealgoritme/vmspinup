@@ -16,12 +16,10 @@ public class CmdVmResume implements Runnable, VMResume {
 
     @Override
     public void run() {
-        while(!Thread.currentThread().isInterrupted()) {
             VMSpinUp vmSpinUp = VMSpinUp.getInstance();
             VirtualMachine vm;
             vm = vmSpinUp.vmLookupByName("ubuntu-1");
             this.vmResume(vm);
-        }
     }
 
     @Override

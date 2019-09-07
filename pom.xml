@@ -12,7 +12,7 @@
 
     <groupId>com.lemon</groupId>
     <artifactId>vmspinup</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
 
     <properties>
         <!-- Spring boot main class -->

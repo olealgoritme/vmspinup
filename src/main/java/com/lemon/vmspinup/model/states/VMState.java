@@ -1,12 +1,11 @@
 package com.lemon.vmspinup.model.states;
 
 public enum VMState {
-
-    CREATING,
-    STARTING,
-    RUNNING,
+    UNDEFINED,
+    CREATED,
+    STARTED,
+    RESUMED,
     SUSPENDED,
-    SHUTTING_DOWN,
-    SHUT_DOWN
-
+    CRASHED,
+    SHUTDOWN
 }

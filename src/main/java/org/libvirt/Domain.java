@@ -11,12 +11,7 @@ import java.util.concurrent.TimeUnit;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.ptr.IntByReference;
-import org.libvirt.event.BlockJobListener;
-import org.libvirt.event.IOErrorListener;
-import org.libvirt.event.LifecycleListener;
-import org.libvirt.event.PMSuspendListener;
-import org.libvirt.event.PMWakeupListener;
-import org.libvirt.event.RebootListener;
+import org.libvirt.event.*;
 import org.libvirt.flags.DomainBlockResizeFlags;
 import org.libvirt.flags.DomainMigrateFlags;
 import org.libvirt.jna.Libvirt;
@@ -1055,6 +1050,11 @@ public class Domain {
      * @see Connect#addLifecycleListener
      * @see Connect#removeLifecycleListener
      */
+
+    public DomainInfo.DomainState getEventStatus() throws LibvirtException {
+        return this.getInfo().state;
+    }
+
     public void addLifecycleListener(final LifecycleListener l) throws LibvirtException {
         virConnect.domainEventRegister(this, l);
     }
