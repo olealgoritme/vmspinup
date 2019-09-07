@@ -33,9 +33,10 @@ public class CliCommands implements Runnable {
     LineReaderImpl reader;
     PrintWriter out;
 
-    CliCommands() {}
+    private CliCommands() {}
 
-    public void setReader(LineReader reader){
+    private void setReader(LineReader reader){
+
         this.reader = (LineReaderImpl)reader;
         out = reader.getTerminal().writer();
     }
@@ -66,7 +67,7 @@ public class CliCommands implements Runnable {
                     line = reader.readLine(prompt, null, (MaskingCallback) null, null);
                     ParsedLine pl = reader.getParser().parse(line, 0);
                     String[] arguments = pl.words().toArray(new String[0]);
-                    CommandLine.run(commands, arguments);
+                    cmd.execute(arguments);
                 } catch (UserInterruptException e) {
                     // Ignore
                 } catch (EndOfFileException e) {

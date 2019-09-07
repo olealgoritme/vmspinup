@@ -18,7 +18,9 @@ public class CmdVmListAllVMs implements Runnable, VMList {
 
     @Override
     public void run() {
-        this.vmListAllVMs();
+        while(!Thread.currentThread().isInterrupted()) {
+            this.vmListAllVMs();
+        }
     }
 
     @Override

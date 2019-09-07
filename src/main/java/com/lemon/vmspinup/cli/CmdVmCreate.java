@@ -17,8 +17,10 @@ public class CmdVmCreate implements Runnable, VMCreate {
 
     @Override
     public void run() {
-        VirtualMachine vm = new VirtualMachine("ubuntu-1", 2097152, 2, null);
-        this.vmCreate(vm);
+        while(!Thread.currentThread().isInterrupted()) {
+            VirtualMachine vm = new VirtualMachine("ubuntu-1", 2097152, 2, null);
+            this.vmCreate(vm);
+        }
     }
 
     @Override

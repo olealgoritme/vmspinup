@@ -17,10 +17,12 @@ public class CmdVmSuspend implements Runnable, VMSuspend {
 
     @Override
     public void run() {
-        VMSpinUp vmSpinUp = VMSpinUp.getInstance();
-        VirtualMachine vm;
-        vm = vmSpinUp.vmLookupByName("ubuntu-1");
-        this.vmSuspend(vm);
+        while(!Thread.currentThread().isInterrupted()) {
+            VMSpinUp vmSpinUp = VMSpinUp.getInstance();
+            VirtualMachine vm;
+            vm = vmSpinUp.vmLookupByName("ubuntu-1");
+            this.vmSuspend(vm);
+        }
     }
 
     @Override
