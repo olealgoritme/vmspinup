@@ -27,7 +27,7 @@ public class CmdVmListAllVMs implements Runnable, VMList {
         parent.out.println(String.format("%s", "-----------------------------------------------------------------------"));
 
         for (VirtualMachine vm : vmList) {
-            parent.out.println(String.format("%15s %3s %3s %3s %3s %3s %3s %2.5s %3s %3s", vm.getName(), "|", vm.getID(), "|", "OS=HVM", "|", (vm.getRamAmount() / 1024 / 1024) + " GB", "|", vm.getvCPU(), "--State--"));
+            parent.out.println(String.format("%15s %3s %3s %3s %3s %3s %3s %2.5s %3s %3s", vm.getName(), "|", vm.getID(), "|", "OS=HVM", "|", (vm.getRamAmount() / 1024 / 1024) + " GB", "|", vm.getvCPU(), "|", vm.getVmState().toString()));
 
                 /*parent.out.println("UUID = " + d.getUUIDString());
                 parent.out.println("Active = " + (d.isActive()));

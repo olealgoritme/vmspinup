@@ -16,6 +16,8 @@ import org.libvirt.event.LifecycleListener;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static org.libvirt.Library.runEventLoop;
+
 public class VMSpinUp implements VMCommands, VirtCommands {
 
     private static VMSpinUp VMSpinUp;
@@ -139,41 +141,57 @@ public class VMSpinUp implements VMCommands, VirtCommands {
     }
 
 
-    private void addListener(VirtualMachine vm, Domain domain) {
-        if(vm.getVMStateListener() != null) {
-            VMStateListener listener = vm.getVMStateListener();
+    private void addListener(final VirtualMachine virtualMachine, Domain domain) {
+        if(virtualMachine.getVMStateListener() != null) {
+            VMStateListener listener = virtualMachine.getVMStateListener();
             try {
-                domain.addLifecycleListener((domain1, event) -> {
+                domain.addLifecycleListener(new LifecycleListener() {
+                    @Override
+                    public void onLifecycleChange(Domain domain1, DomainEvent event) {
 
-                    if (event.getType() == DomainEventType.DEFINED) {
-                        vm.setVmState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
-                        listener.onCreated(vm);
+                        System.out.println("DOMAINEVENT: " + event);
+                        if (event.getType() == DomainEventType.DEFINED) {
+                            virtualMachine.setVmState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
+                            listener.onCreated(virtualMachine);
 
-                    } else if (event.getType() == DomainEventType.STARTED) {
-                        vm.setVmState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
-                        listener.onStarted(vm);
+                        } else if (event.getType() == DomainEventType.STARTED) {
+                            virtualMachine.setVmState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
+                            listener.onStarted(virtualMachine);
 
-                    } else if (event.getType() == DomainEventType.SUSPENDED) {
-                        vm.setVmState(DomainInfo.DomainState.VIR_DOMAIN_PAUSED);
-                        listener.onSuspended(vm);
+                        } else if (event.getType() == DomainEventType.SUSPENDED) {
+                            virtualMachine.setVmState(DomainInfo.DomainState.VIR_DOMAIN_PAUSED);
+                            listener.onSuspended(virtualMachine);
 
-                    } else if (event.getType() == DomainEventType.RESUMED) {
-                        vm.setVmState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
-                        listener.onResumed(vm);
+                        } else if (event.getType() == DomainEventType.RESUMED) {
+                            virtualMachine.setVmState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
+                            listener.onResumed(virtualMachine);
 
-                    } else if (event.getType() == DomainEventType.SHUTDOWN) {
-                        vm.setVmState(DomainInfo.DomainState.VIR_DOMAIN_SHUTDOWN);
-                        listener.onShutdown(vm);
+                        } else if (event.getType() == DomainEventType.SHUTDOWN) {
+                            virtualMachine.setVmState(DomainInfo.DomainState.VIR_DOMAIN_SHUTDOWN);
+                            listener.onShutdown(virtualMachine);
 
-                    } else if (event.getType() == DomainEventType.CRASHED) {
-                        vm.setVmState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
-                        listener.onCrashed(vm);
+                        } else if (event.getType() == DomainEventType.CRASHED) {
+                            virtualMachine.setVmState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
+                            listener.onCrashed(virtualMachine);
+                        }
                     }
-                    return 0;
                 });
+
             } catch (LibvirtException ex) {
                 ex.printStackTrace();
+            } finally {
+
+                new Thread() {
+                    public void run() {
+                        try {
+                            Library.runEventLoop();
+                        } catch (InterruptedException | LibvirtException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }.start();
             }
+
 
         }
     }

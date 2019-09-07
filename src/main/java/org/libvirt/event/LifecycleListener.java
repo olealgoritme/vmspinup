@@ -14,8 +14,8 @@ public interface LifecycleListener extends EventListener {
      * @param domain the domain on which the event occurred
      * @param event  contains information about the type of event
      *               that occurred and details about that event
-     * @return the return value is currently ignored.
+     * @return the return value is currently ignored (was int, changed to void).
      */
-    int onLifecycleChange(Domain domain,
+     void onLifecycleChange(Domain domain,
                           DomainEvent event);
 }

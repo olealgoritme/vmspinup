@@ -491,7 +491,7 @@ public class Connect {
             return;
         }
 
-        DomainPointer ptr = domain == null ? null : domain.VDP;
+        DomainPointer ptr = (domain == null ? null : domain.VDP);
         int ret = processError(libvirt.virConnectDomainEventRegisterAny(VCP, ptr, eventID, cb, null, null));
 
         // track the handler
@@ -552,38 +552,34 @@ public class Connect {
         domainEventRegister(domain, DomainEventID.VIR_DOMAIN_EVENT_ID_REBOOT.getValue(), virCB, cb);
     }
 
-    void domainEventRegister(Domain domain, final LifecycleListener cb) throws LibvirtException {
-        if (cb == null) {
+    void domainEventRegister(Domain domain, final LifecycleListener lifecycleListener) throws LibvirtException {
+        if (lifecycleListener == null) {
             throw new IllegalArgumentException("LifecycleCallback cannot be null");
         }
 
         VirConnectDomainEventCallback virCB = new VirConnectDomainEventCallback() {
             @Override
-            public int eventCallback(ConnectionPointer virConnectPtr, DomainPointer virDomainPointer,
-                                     final int eventCode,
-                                     final int detailCode,
-                                     Pointer opaque) {
+            public void eventCallback(ConnectionPointer virConnectPtr, DomainPointer virDomainPointer,
+                                      final int eventCode,
+                                      final int detailCode,
+                                      Pointer opaque) {
+                System.out.println(String.format("-- LIFECYCLE -- %d", eventCode));
                 assert VCP.equals(virConnectPtr);
 
+                Domain dom = null;
                 try {
-                    Domain dom = Domain.constructIncRef(Connect.this, virDomainPointer);
-                    DomainEventType type = getConstant(DomainEventType.class, eventCode);
-                    DomainEvent event = new DomainEvent(type, detailCode);
-
-                    cb.onLifecycleChange(dom, event);
+                    dom = Domain.constructIncRef(Connect.this, virDomainPointer);
                 } catch (LibvirtException e) {
-                    throw new RuntimeException("libvirt error in lifecycle callback", e);
+                    e.printStackTrace();
                 }
+                DomainEventType type = getConstant(DomainEventType.class, eventCode);
+                DomainEvent event = new DomainEvent(type, detailCode);
 
-                // always return 0, regardless of what the
-                // callback method returned. This may need to be
-                // changed in the future, in case the return value
-                // is used for something by libvirt.
-                return 0;
+                lifecycleListener.onLifecycleChange(dom, event);
             }
         };
 
-        domainEventRegister(domain, DomainEventID.VIR_DOMAIN_EVENT_ID_LIFECYCLE.getValue(), virCB, cb);
+        domainEventRegister(domain, DomainEventID.VIR_DOMAIN_EVENT_ID_LIFECYCLE.getValue(), virCB, lifecycleListener);
     }
 
     void domainEventRegister(Domain domain, final BlockJobListener l) throws LibvirtException {
