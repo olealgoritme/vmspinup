@@ -27,6 +27,8 @@ public class VirtualMachine {
     private int storageAmount;              // storage amount (for creating!)
     private StorageVolume storageVolume;       // storage volume image path
     private HyperVisor hyperVisor;          // HyperVisor type
+    private boolean persistent;              // persistent configuration (can later be deployed)
+
 
     public VirtualMachine() {
     }
@@ -100,6 +102,13 @@ public class VirtualMachine {
         return this.storageVolume;
     }
 
+    public boolean isPersistent() {
+        return persistent;
+    }
+
+    public void setPersistent(boolean persistent) {
+        this.persistent = persistent;
+    }
     public String toXML() {
 
             storageVolume = new StorageVolume("/home/xuw/servers/test_bare_metal.qcow2");
@@ -130,6 +139,7 @@ public class VirtualMachine {
 
             return String.format(XML, this.name, this.ramAmount, this.vCPU, this.storageVolume.getPath());
     }
+
 
 
 }

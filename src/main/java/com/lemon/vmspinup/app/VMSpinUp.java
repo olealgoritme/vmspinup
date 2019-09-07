@@ -217,6 +217,8 @@ public class VMSpinUp implements VMCommands, VirtCommands {
             case LXC:
                 DEFAULT_HYPERVISOR = LXC.getInstance();
                 break;
+            default:
+                DEFAULT_HYPERVISOR = KVM.getInstance();
         }
     }
 

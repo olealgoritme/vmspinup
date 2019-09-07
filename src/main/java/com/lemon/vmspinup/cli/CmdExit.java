@@ -10,9 +10,10 @@ import java.util.concurrent.Callable;
 public class CmdExit implements Callable<Void> {
 
     @CommandLine.ParentCommand
+
     private CliCommands parent = null;
 
-    public Void call() throws IOException {
+    public Void call() {
         VMSpinUp.disconnect();
         parent = null;
         System.exit(0);

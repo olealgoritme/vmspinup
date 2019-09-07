@@ -9,9 +9,10 @@ import java.util.concurrent.Callable;
 public class CmdClearScreen implements Callable<Void> {
 
     @CommandLine.ParentCommand
+
     CliCommands parent;
 
-    public Void call() throws IOException {
+    public Void call() {
         parent.reader.clearScreen();
         return null;
     }

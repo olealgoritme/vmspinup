@@ -21,7 +21,7 @@ import java.io.PrintWriter;
                 CmdExit.class,
                 CmdVmCreate.class,
                 CmdVmDestroy.class,
-                CmdVmList.class,
+                CmdVmListAllVMs.class,
                 CmdVmResume.class,
                 CmdVmShutdown.class,
                 CmdVmStart.class,
