@@ -4,7 +4,7 @@ import com.sun.jna.Native;
 import org.libvirt.jna.structures.virSecurityModel;
 
 /**
- * A security model used for mandatory access control.
+ * A security com.lemon.vmspinup.model used for mandatory access control.
  *
  * @see Connect#getSecurityModel
  */
@@ -18,16 +18,16 @@ public final class SecurityModel {
     }
 
     /**
-     * Returns the model of this SecurityModel.
+     * Returns the com.lemon.vmspinup.model of this SecurityModel.
      *
-     * @return the model string
+     * @return the com.lemon.vmspinup.model string
      */
     public String getModel() {
         return model;
     }
 
     /**
-     * Returns the DOI, domain of interpretation of this security model.
+     * Returns the DOI, domain of interpretation of this security com.lemon.vmspinup.model.
      *
      * @return the DOI
      */

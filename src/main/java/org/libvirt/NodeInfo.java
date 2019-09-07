@@ -8,7 +8,7 @@ import org.libvirt.jna.structures.virNodeInfo;
  */
 public class NodeInfo {
     /**
-     * string indicating the CPU model
+     * string indicating the CPU com.lemon.vmspinup.model
      */
     public String model;
     /**
@@ -64,6 +64,6 @@ public class NodeInfo {
 
     @Override
     public String toString() {
-        return String.format("model:%s%nmemory:%d%ncpus:%d%nmhz:%d%nnodes:%d%nsockets:%d%ncores:%d%nthreads:%d%n", model, memory, cpus, mhz, nodes, sockets, cores, threads);
+        return String.format("com.lemon.vmspinup.model:%s%nmemory:%d%ncpus:%d%nmhz:%d%nnodes:%d%nsockets:%d%ncores:%d%nthreads:%d%n", model, memory, cpus, mhz, nodes, sockets, cores, threads);
     }
 }

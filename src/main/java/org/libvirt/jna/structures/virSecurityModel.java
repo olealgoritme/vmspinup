@@ -9,7 +9,7 @@ public class virSecurityModel extends Structure {
     private static final int VIR_SECURITY_MODEL_BUFLEN = 256 + 1;
     private static final int VIR_SECURITY_DOI_BUFLEN = 256 + 1;
 
-    private static final List<String> fields = Arrays.asList("model", "doi");
+    private static final List<String> fields = Arrays.asList("com/lemon/vmspinup/model", "doi");
 
     public byte model[] = new byte[VIR_SECURITY_MODEL_BUFLEN];
     public byte doi[] = new byte[VIR_SECURITY_DOI_BUFLEN];

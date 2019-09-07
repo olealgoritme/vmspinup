@@ -551,7 +551,7 @@ public class Domain {
      * Get the security label of an active domain.
      *
      * @return the SecurityLabel or {@code null} if the domain is not
-     * running under a security model
+     * running under a security com.lemon.vmspinup.model
      * @throws LibvirtException
      */
     public SecurityLabel getSecurityLabel() throws LibvirtException {

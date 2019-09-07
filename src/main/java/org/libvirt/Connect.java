@@ -1041,7 +1041,7 @@ public class Connect {
     }
 
     /**
-     * Returns the security model of the connected node.
+     * Returns the security com.lemon.vmspinup.model of the connected node.
      */
     public SecurityModel getSecurityModel() throws LibvirtException {
         virSecurityModel secmodel = new virSecurityModel();

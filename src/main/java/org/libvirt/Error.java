@@ -461,7 +461,7 @@ public class Error implements Serializable {
          */
         VIR_ERR_NO_NODE_DEVICE,
         /**
-         * security model not found
+         * security com.lemon.vmspinup.model not found
          */
         VIR_ERR_NO_SECURITY_MODEL,
         /**

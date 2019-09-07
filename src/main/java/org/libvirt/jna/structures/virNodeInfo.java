@@ -26,7 +26,7 @@ public class virNodeInfo extends Structure {
     public int threads;
 
     private static final List<String> fields = Arrays.asList(
-            "model", "memory", "cpus", "mhz", "nodes",
+            "com/lemon/vmspinup/model", "memory", "cpus", "mhz", "nodes",
             "sockets", "cores", "threads");
 
     @Override
