@@ -22,12 +22,12 @@ public class VMSpinUp implements VMCommands, VirtCommands {
 
     private static VMSpinUp VMSpinUp;
     private static HyperVisor DEFAULT_HYPERVISOR = KVM.getInstance();
-    private static VirtualMachine vm;
+    private VirtualMachine vm;
 
     // LV
     private static Connect lvConn;
     private static ConnectAuth lvCa;
-    private static Domain domain;
+    private Domain domain;
 
 
     private VMSpinUp() {
@@ -44,16 +44,9 @@ public class VMSpinUp implements VMCommands, VirtCommands {
         try {
             getInstance();
             domain = lvConn.domainLookupByName(vmName);
-            vm = new VirtualMachine();
-            vm.setVmState(domain.getEventStatus());
-            vm.setHyperVisor(DEFAULT_HYPERVISOR);
-            vm.setUUID(UUID.fromString(domain.getUUIDString()));
-            vm.setID(domain.getID());
-            vm.setName(domain.getName());
-            vm.setvCPU(domain.getMaxVcpus());
-            vm.setRamAmount(domain.getMaxMemory());
+            createVirtualMachine();
 
-    } catch (LibvirtException e) {
+        } catch (LibvirtException e) {
             e.printStackTrace();
             return null;
         }
@@ -65,14 +58,7 @@ public class VMSpinUp implements VMCommands, VirtCommands {
         try {
             getInstance();
             domain = lvConn.domainLookupByID(id);
-            vm = new VirtualMachine();
-            vm.setVmState(domain.getEventStatus());
-            vm.setHyperVisor(DEFAULT_HYPERVISOR);
-            vm.setUUID(UUID.fromString(domain.getUUIDString()));
-            vm.setID(domain.getID());
-            vm.setName(domain.getName());
-            vm.setvCPU(domain.getMaxVcpus());
-            vm.setRamAmount(domain.getMaxMemory());
+            createVirtualMachine();
         } catch (LibvirtException e) {
             e.printStackTrace();
             return null;
@@ -80,19 +66,23 @@ public class VMSpinUp implements VMCommands, VirtCommands {
             return vm;
     }
 
+    private void createVirtualMachine() throws LibvirtException {
+        vm = new VirtualMachine();
+        vm.setVmState(domain.getEventStatus());
+        vm.setHyperVisor(DEFAULT_HYPERVISOR);
+        vm.setUUID(UUID.fromString(domain.getUUIDString()));
+        vm.setID(domain.getID());
+        vm.setName(domain.getName());
+        vm.setvCPU(domain.getMaxVcpus());
+        vm.setRamAmount(domain.getMaxMemory());
+    }
+
     @Override
     public VirtualMachine vmLookupByUUID(UUID uuid) {
         try {
             getInstance();
             domain = lvConn.domainLookupByUUID(uuid);
-            vm = new VirtualMachine();
-            vm.setVmState(domain.getEventStatus());
-            vm.setHyperVisor(DEFAULT_HYPERVISOR);
-            vm.setUUID(UUID.fromString(domain.getUUIDString()));
-            vm.setID(domain.getID());
-            vm.setName(domain.getName());
-            vm.setvCPU(domain.getMaxVcpus());
-            vm.setRamAmount(domain.getMaxMemory());
+            createVirtualMachine();
 
         } catch (LibvirtException e) {
             e.printStackTrace();
@@ -141,13 +131,22 @@ public class VMSpinUp implements VMCommands, VirtCommands {
     }
 
 
-    private void addListener(final VirtualMachine virtualMachine, Domain domain) {
-        if(virtualMachine.getVMStateListener() != null) {
+    private void addListener(final VirtualMachine virtualMachine, final Domain domain) {
+
+        if(virtualMachine.getVMStateListener() == null)
+            throw new IllegalArgumentException("No VMStateListener attached");
+
+
             VMStateListener listener = virtualMachine.getVMStateListener();
-            try {
+
+            Thread thread = new Thread(() -> {
+                try {
+                    runEventLoop();
+                    System.out.println("STARTING EVENT LOOP");
+
                 domain.addLifecycleListener(new LifecycleListener() {
                     @Override
-                    public void onLifecycleChange(Domain domain1, DomainEvent event) {
+                    public void onLifecycleChange(Domain d, DomainEvent event) {
 
                         System.out.println("DOMAINEVENT: " + event);
                         if (event.getType() == DomainEventType.DEFINED) {
@@ -176,24 +175,11 @@ public class VMSpinUp implements VMCommands, VirtCommands {
                         }
                     }
                 });
-
-            } catch (LibvirtException ex) {
+            } catch (InterruptedException | LibvirtException ex) {
                 ex.printStackTrace();
-            } finally {
-
-                new Thread() {
-                    public void run() {
-                        try {
-                            Library.runEventLoop();
-                        } catch (InterruptedException | LibvirtException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }.start();
             }
-
-
-        }
+       });
+       thread.start();
     }
 
     @Override

@@ -552,34 +552,29 @@ public class Connect {
         domainEventRegister(domain, DomainEventID.VIR_DOMAIN_EVENT_ID_REBOOT.getValue(), virCB, cb);
     }
 
-    void domainEventRegister(Domain domain, final LifecycleListener lifecycleListener) throws LibvirtException {
-        if (lifecycleListener == null) {
+    void domainEventRegister(final Domain dom, final LifecycleListener cb) throws LibvirtException {
+        if (cb == null) {
             throw new IllegalArgumentException("LifecycleCallback cannot be null");
         }
 
-        VirConnectDomainEventCallback virCB = new VirConnectDomainEventCallback() {
-            @Override
-            public void eventCallback(ConnectionPointer virConnectPtr, DomainPointer virDomainPointer,
-                                      final int eventCode,
-                                      final int detailCode,
-                                      Pointer opaque) {
-                System.out.println(String.format("-- LIFECYCLE -- %d", eventCode));
-                assert VCP.equals(virConnectPtr);
+        VirConnectDomainEventCallback virCB = (virConnectPtr, virDomainPointer, eventCode, detailCode, opaque) -> {
 
-                Domain dom = null;
-                try {
-                    dom = Domain.constructIncRef(Connect.this, virDomainPointer);
-                } catch (LibvirtException e) {
-                    e.printStackTrace();
-                }
+                assert VCP.equals(virConnectPtr);
+                System.out.println(String.format("-- LIFECYCLE -- %d", detailCode));
+
+            try {
+                Domain dom1 = Domain.constructIncRef(Connect.this, virDomainPointer);
                 DomainEventType type = getConstant(DomainEventType.class, eventCode);
                 DomainEvent event = new DomainEvent(type, detailCode);
 
-                lifecycleListener.onLifecycleChange(dom, event);
+                cb.onLifecycleChange(dom1, event);
+            } catch (LibvirtException e) {
+                e.printStackTrace();
             }
+
         };
 
-        domainEventRegister(domain, DomainEventID.VIR_DOMAIN_EVENT_ID_LIFECYCLE.getValue(), virCB, lifecycleListener);
+        domainEventRegister(dom, DomainEventID.VIR_DOMAIN_EVENT_ID_LIFECYCLE.getValue(), virCB, cb);
     }
 
     void domainEventRegister(Domain domain, final BlockJobListener l) throws LibvirtException {
@@ -703,8 +698,8 @@ public class Connect {
      * @param l the I/O error listener
      * @throws LibvirtException on failure
      */
-    public void addIOErrorListener(final IOErrorListener l) throws LibvirtException {
-        domainEventRegister(null, l);
+    public void addIOErrorListener(Domain domain, final IOErrorListener l) throws LibvirtException {
+        domainEventRegister(domain, l);
     }
 
     /**
@@ -716,8 +711,8 @@ public class Connect {
      * @see #removeLifecycleListener
      * @see Domain#addLifecycleListener
      */
-    public void addLifecycleListener(final LifecycleListener l) throws LibvirtException {
-        domainEventRegister(null, l);
+    public void addLifecycleListener(Domain domain, final LifecycleListener l) throws LibvirtException {
+        domainEventRegister(domain, l);
     }
 
     /**
@@ -740,8 +735,8 @@ public class Connect {
      * @see #removeBlockJobListener
      * @see Domain#addBlockJobListener
      */
-    public void addBlockJobListener(final BlockJobListener l) throws LibvirtException {
-        domainEventRegister(null, l);
+    public void addBlockJobListener(Domain domain, final BlockJobListener l) throws LibvirtException {
+        domainEventRegister(domain, l);
     }
 
     /**
@@ -765,8 +760,8 @@ public class Connect {
      * @see Domain#addPMSuspendListener
      * @since 1.5.2
      */
-    public void addPMSuspendListener(final PMSuspendListener l) throws LibvirtException {
-        domainEventRegister(null, l);
+    public void addPMSuspendListener(Domain domain, final PMSuspendListener l) throws LibvirtException {
+        domainEventRegister(domain, l);
     }
 
     /**
@@ -791,8 +786,8 @@ public class Connect {
      * @see Domain#addPMWakeupListener
      * @since 1.5.2
      */
-    public void addPMWakeupListener(final PMWakeupListener l) throws LibvirtException {
-        domainEventRegister(null, l);
+    public void addPMWakeupListener(Domain domain, final PMWakeupListener l) throws LibvirtException {
+        domainEventRegister(domain, l);
     }
 
     /**
@@ -815,8 +810,8 @@ public class Connect {
      * @see Domain#addRebootListener
      * @since 1.5.2
      */
-    public void addRebootListener(final RebootListener l) throws LibvirtException {
-        domainEventRegister(null, l);
+    public void addRebootListener(Domain domain, final RebootListener l) throws LibvirtException {
+        domainEventRegister(domain, l);
     }
 
     /**
