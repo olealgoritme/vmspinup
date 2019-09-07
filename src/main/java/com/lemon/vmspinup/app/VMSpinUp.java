@@ -68,7 +68,7 @@ public class VMSpinUp implements VMCommands, VirtCommands {
 
     private void createVirtualMachine() throws LibvirtException {
         vm = new VirtualMachine();
-        vm.setVmState(domain.getEventStatus());
+        vm.setVMState(domain.getEventStatus());
         vm.setHyperVisor(DEFAULT_HYPERVISOR);
         vm.setUUID(UUID.fromString(domain.getUUIDString()));
         vm.setID(domain.getID());
@@ -124,10 +124,10 @@ public class VMSpinUp implements VMCommands, VirtCommands {
         } catch (LibvirtException e) {
             e.printStackTrace();
             return false;
-        } finally {
-            addListener(vm,domain);
         }
+        addListener(vm,domain);
         return true;
+
     }
 
 
@@ -150,27 +150,27 @@ public class VMSpinUp implements VMCommands, VirtCommands {
 
                         System.out.println("DOMAINEVENT: " + event);
                         if (event.getType() == DomainEventType.DEFINED) {
-                            virtualMachine.setVmState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
+                            virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
                             listener.onCreated(virtualMachine);
 
                         } else if (event.getType() == DomainEventType.STARTED) {
-                            virtualMachine.setVmState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
+                            virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
                             listener.onStarted(virtualMachine);
 
                         } else if (event.getType() == DomainEventType.SUSPENDED) {
-                            virtualMachine.setVmState(DomainInfo.DomainState.VIR_DOMAIN_PAUSED);
+                            virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_PAUSED);
                             listener.onSuspended(virtualMachine);
 
                         } else if (event.getType() == DomainEventType.RESUMED) {
-                            virtualMachine.setVmState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
+                            virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
                             listener.onResumed(virtualMachine);
 
                         } else if (event.getType() == DomainEventType.SHUTDOWN) {
-                            virtualMachine.setVmState(DomainInfo.DomainState.VIR_DOMAIN_SHUTDOWN);
+                            virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_SHUTDOWN);
                             listener.onShutdown(virtualMachine);
 
                         } else if (event.getType() == DomainEventType.CRASHED) {
-                            virtualMachine.setVmState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
+                            virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
                             listener.onCrashed(virtualMachine);
                         }
                     }

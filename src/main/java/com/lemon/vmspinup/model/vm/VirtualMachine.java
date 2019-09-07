@@ -12,31 +12,27 @@ import org.libvirt.event.DomainEventType;
 import java.util.UUID;
 
 /*
-*  Layer between the horrendous libVirt XML domain object
+*  Layer between the horrendous libvirt XML domain object
 *  and our VM instance object
 *
  */
 
-/*
-
-TODO: NEED STATES + MORE Node information
- */
 public class VirtualMachine {
 
-    private int id;                                      // unique ID when instance is running
-    private String name;                                 // name
-    private UUID uuid = UUID.randomUUID();               // 128 bit long value (A UUID is made of up of hex digits  (4 chars each) along with 4 “-” symbols which make its length equal to 36 characters.)
+    private int id;                                                                     // unique ID when instance is running (libvirt backend assigns this value)
+    private String name;                                                                // name
+    private UUID uuid = UUID.randomUUID();                                              // 128 bit long value (A UUID is made of up of hex digits  (4 chars each) along with 4 “-” symbols which make its length equal to 36 characters.)
 
-    private int vCPU;                                    // vCPU count
-    private long ramAmount;                              // delegated ram usage
+    private int vCPU;                                                                   // vCPU count
+    private long ramAmount;                                                             // delegated ram usage
 
-    private String os = "hvm";                           // OS name (e.g hvm)
-    private String arch = "x86_64";                      // OS architecture
-    private int storageAmount;                           // storage amount (for creating!)
-    private StorageVolume storageVolume;                 // storage volume image path
-    private HyperVisor hyperVisor = KVM.getInstance();   // default HyperVisor type
+    private String os = "hvm";                                                          // OS name (e.g hvm)
+    private String arch = "x86_64";                                                     // OS architecture
+    private int storageAmount;                                                          // storage amount (for creating!)
+    private StorageVolume storageVolume;                                                // storage volume image path
+    private HyperVisor hyperVisor = VMSpinUp.getHyperVisor();                           // default HyperVisor type
 
-    private VMStateListener vmStateListener;             // VM state / event listener
+    private VMStateListener vmStateListener;                                            // VM state / event listener
     private DomainInfo.DomainState vmState = DomainInfo.DomainState.VIR_DOMAIN_NOSTATE; // default VM state
 
     public VirtualMachine() {
@@ -96,10 +92,6 @@ public class VirtualMachine {
         return this.uuid;
     }
 
-    public String getUUIDString() {
-        return this.uuid.toString();
-    }
-
     public String getName() {
         return this.name;
     }
@@ -117,9 +109,6 @@ public class VirtualMachine {
     }
 
     public String toXML() {
-
-            storageVolume = new StorageVolume("/home/xuw/servers/test_bare_metal.qcow2");
-
             String XML =    "<domain type='%s'>"+ "\n" +
                             "<name>%s</name>"+  "\n" +
                             "<timer name='kvmclock' present='yes'/>" + "\n" +
@@ -150,18 +139,18 @@ public class VirtualMachine {
 
 
     public VMStateListener getVMStateListener() {
-        return vmStateListener;
+        return this.vmStateListener;
     }
 
     public void setVMStateListener(VMStateListener vmStateListener) {
         this.vmStateListener = vmStateListener;
     }
 
-    public DomainInfo.DomainState getVmState() {
+    public DomainInfo.DomainState getVMState() {
         return vmState;
     }
 
-    public void setVmState(DomainInfo.DomainState vmState) {
+    public void setVMState(DomainInfo.DomainState vmState) {
         this.vmState = vmState;
     }
 

@@ -10,4 +10,5 @@ public interface VirtCommands {
     VirtualMachine vmLookupByUUID(UUID uuid);
     VirtualMachine vmLookupByID(int id);
     VirtualMachine vmLookupByName(String vmName);
+
 }
