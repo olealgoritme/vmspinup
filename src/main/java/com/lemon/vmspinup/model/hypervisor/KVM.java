@@ -9,7 +9,7 @@ public class KVM extends HyperVisor {
 
     public KVM() {
         super();
-        this.name = "KVM";
+        this.name = "kvm";
         this.type = "kvm";
         try {
             this.uri = new URI("qemu:///system");

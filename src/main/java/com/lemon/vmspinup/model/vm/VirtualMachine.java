@@ -2,6 +2,7 @@ package com.lemon.vmspinup.model.vm;
 
 import com.lemon.vmspinup.app.VMSpinUp;
 import com.lemon.vmspinup.model.hypervisor.HyperVisor;
+import com.lemon.vmspinup.model.hypervisor.KVM;
 import com.lemon.vmspinup.model.listeners.VMStateListener;
 import com.lemon.vmspinup.model.states.VMState;
 import com.lemon.vmspinup.model.storage.StorageVolume;
@@ -22,21 +23,21 @@ TODO: NEED STATES + MORE Node information
  */
 public class VirtualMachine {
 
-    private int id;                         // unique ID when instance is running
-    private String name;                    // name
-    private UUID uuid;                      // 128 bit long value (A UUID is made of up of hex digits  (4 chars each) along with 4 “-” symbols which make its length equal to 36 characters.)
+    private int id;                                      // unique ID when instance is running
+    private String name;                                 // name
+    private UUID uuid = UUID.randomUUID();               // 128 bit long value (A UUID is made of up of hex digits  (4 chars each) along with 4 “-” symbols which make its length equal to 36 characters.)
 
-    private int vCPU;                       // vCPU count
-    private long ramAmount;                 // delegated ram usage
+    private int vCPU;                                    // vCPU count
+    private long ramAmount;                              // delegated ram usage
 
-    private String os = "Linux";            // OS name (e.g hvm)
-    private String arch = "x86_64";         // OS arch
-    private int storageAmount;              // storage amount (for creating!)
-    private StorageVolume storageVolume;       // storage volume image path
-    private HyperVisor hyperVisor;          // HyperVisor type
+    private String os = "hvm";                           // OS name (e.g hvm)
+    private String arch = "x86_64";                      // OS architecture
+    private int storageAmount;                           // storage amount (for creating!)
+    private StorageVolume storageVolume;                 // storage volume image path
+    private HyperVisor hyperVisor = KVM.getInstance();   // default HyperVisor type
 
-    private VMStateListener vmStateListener;
-    private DomainInfo.DomainState vmState = DomainInfo.DomainState.VIR_DOMAIN_NOSTATE;
+    private VMStateListener vmStateListener;             // VM state / event listener
+    private DomainInfo.DomainState vmState = DomainInfo.DomainState.VIR_DOMAIN_NOSTATE; // default VM state
 
     public VirtualMachine() {
     }
@@ -144,7 +145,7 @@ public class VirtualMachine {
                             "</devices>"+ "\n" +
                             "</domain>";
 
-            return String.format(XML, this.hyperVisor.getName(), this.name, this.ramAmount, this.vCPU, this.arch, this.os, this.storageVolume.getPath());
+            return String.format(XML, this.hyperVisor.getType(), this.name, this.ramAmount, this.vCPU, this.arch, this.os, this.storageVolume.getPath());
     }
 
 

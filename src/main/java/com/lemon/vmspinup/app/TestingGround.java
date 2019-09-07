@@ -1,6 +1,7 @@
 package com.lemon.vmspinup.app;
 
 import com.lemon.vmspinup.cli.CliCommands;
+import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -14,13 +15,25 @@ public class TestingGround {
 
         public static void main(String[] args) {
 
-            SpringApplication.run(TestingGround.class, args);
+            // Spring boot, disabled banner screen
+            SpringApplication app = new SpringApplication(TestingGround.class);
+            app.setBannerMode(Banner.Mode.OFF);
+            app.setLogStartupInfo(false);
+            app.run(args);
+
+
+
+            System.out.println(
+                    "   _     _ _______     ______       _       _     _ ______  \n" +
+                    "  (_)   (_|_______)   / _____)     (_)     (_)   (_|_____ \\ \n" +
+                    "   _     _ _  _  _   ( (____  ____  _ ____  _     _ _____) )\n" +
+                    "  | |   | | ||_|| |   \\____ \\|  _ \\| |  _ \\| |   | |  ____/ \n" +
+                    "   \\ \\ / /| |   | |   _____) ) |_| | | | | | |___| | |      \n" +
+                    "    \\___/ |_|   |_|  (______/|  __/|_|_| |_|\\_____/|_|      \n" +
+                    "                             |_|                            \n" +
+                    "                                              "+"v0.1" + "by xuw");
 
             CliCommands.CommandLine();
-
-
-            //domain.create();
-            //conn.close();
 
             /*
             QNameMap qmap = new QNameMap();

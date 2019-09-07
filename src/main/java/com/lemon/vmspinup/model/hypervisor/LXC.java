@@ -9,7 +9,7 @@ public class LXC extends HyperVisor {
 
     private LXC() {
         super();
-        this.type = "LXC";
+        this.type = "lxc";
         this.name = "lxc";
         try {
             this.uri = new URI("lxc:///");

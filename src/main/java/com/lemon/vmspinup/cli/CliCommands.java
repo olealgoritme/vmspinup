@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 
 @CommandLine.Command(
         name = "VMSpinUp by xuw",
-        description = "VM Instance SpinUp",
+        description = "",
         version = "0.1",
         footer = {"", "run 'exit' to quit CLI."},
         subcommands = {
@@ -50,6 +50,7 @@ public class CliCommands implements Runnable {
             // set up the completion
             CliCommands commands = new CliCommands();
             CommandLine cmd = new CommandLine(commands);
+//                        cmd.setColorScheme(CommandLine.Help.defaultColorScheme(CommandLine.Help.Ansi.AUTO));
 
             Terminal terminal = TerminalBuilder.builder().build();
             LineReader reader = LineReaderBuilder.builder()

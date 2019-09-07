@@ -62,6 +62,11 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>com.jakewharton.fliptables</groupId>
+            <artifactId>fliptables</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
             <version>3.12.1</version>
