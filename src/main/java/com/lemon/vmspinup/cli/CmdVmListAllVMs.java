@@ -23,11 +23,11 @@ public class CmdVmListAllVMs implements Runnable, VMList {
     public void vmListAllVMs() {
         ArrayList<VirtualMachine> vmList = VMSpinUp.getInstance().listVMs();
 
-        parent.out.println(String.format("%25s %3s %3s %3s %3s %3s %3s %3s %3s %3s %3s", "VM Instance", "|", "ID", "|", "OS", "|", "RAM", "|", "vCPUs", "|", "STATE"));
+        parent.out.println(String.format("%25s %3s %3s %3s %3s %3s %3s %3s %3s %3s %3s %3s %3s", "VM Instance", "|", "ID", "|", "OS", "|", "ARCH", "|", "RAM", "|", "vCPUs", "|", "STATE"));
         parent.out.println(String.format("%s", "-----------------------------------------------------------------------"));
 
         for (VirtualMachine vm : vmList) {
-            parent.out.println(String.format("%25s %3s %3s %3s %3s %3s %3s %3s %3s %3s %3s", vm.getName(), "|", vm.getID(), "|", "OS=HVM", "|", (vm.getRamAmount() / 1024 / 1024) + " GB", "|", vm.getvCPU(), "|", vm.getVmState()));
+            parent.out.println(String.format("%25s %3s %3s %3s %3s %3s %3s %3s %3s %3s %3s %3s %3s", vm.getName(), "|", vm.getID(), "|", vm.getOs(), "|", vm.getArch(), "|", (vm.getRamAmount() / 1024 / 1024) + " GB", "|", vm.getvCPU(), "|", vm.getVmState()));
 
                 /*parent.out.println("UUID = " + d.getUUIDString());
                 parent.out.println("Active = " + (d.isActive()));

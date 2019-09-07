@@ -29,6 +29,8 @@ public class VirtualMachine {
     private int vCPU;                       // vCPU count
     private long ramAmount;                 // delegated ram usage
 
+    private String os = "Linux";            // OS name (e.g hvm)
+    private String arch = "x86_64";         // OS arch
     private int storageAmount;              // storage amount (for creating!)
     private StorageVolume storageVolume;       // storage volume image path
     private HyperVisor hyperVisor;          // HyperVisor type
@@ -108,17 +110,22 @@ public class VirtualMachine {
         return this.storageVolume;
     }
 
+    public String toXML(HyperVisor hv, String name, long memory, int vcpu, String os, String arch) {
+        // TODO: create builder from class
+        return null;
+    }
+
     public String toXML() {
 
             storageVolume = new StorageVolume("/home/xuw/servers/test_bare_metal.qcow2");
 
-            String XML =    "<domain type='kvm'>"+ "\n" +
+            String XML =    "<domain type='%s'>"+ "\n" +
                             "<name>%s</name>"+  "\n" +
                             "<timer name='kvmclock' present='yes'/>" + "\n" +
                             "<memory unit='KiB'>%s</memory>"+ "\n" +
                             "<vcpu>%s</vcpu>"+ "\n" +
                             "<os>"+ "\n" +
-                            "<type arch='x86_64'>hvm</type>"+ "\n" +
+                            "<type arch='%s'>%s</type>"+ "\n" +
                             "</os>"+ "\n" +
                             "<clock sync='localtime'/>"+ "\n" +
                             "<devices>"+ "\n" +
@@ -137,7 +144,7 @@ public class VirtualMachine {
                             "</devices>"+ "\n" +
                             "</domain>";
 
-            return String.format(XML, this.name, this.ramAmount, this.vCPU, this.storageVolume.getPath());
+            return String.format(XML, this.hyperVisor.getName(), this.name, this.ramAmount, this.vCPU, this.arch, this.os, this.storageVolume.getPath());
     }
 
 
@@ -155,5 +162,21 @@ public class VirtualMachine {
 
     public void setVmState(DomainInfo.DomainState vmState) {
         this.vmState = vmState;
+    }
+
+    public String getOs() {
+        return os;
+    }
+
+    public void setOs(String os) {
+        this.os = os;
+    }
+
+    public String getArch() {
+        return arch;
+    }
+
+    public void setArch(String arch) {
+        this.arch = arch;
     }
 }
