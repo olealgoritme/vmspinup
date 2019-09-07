@@ -1,11 +1,10 @@
 package com.lemon.vmspinup.app;
 
+import com.lemon.vmspinup.model.commands.*;
 import com.lemon.vmspinup.model.hypervisor.HyperVisor;
 import com.lemon.vmspinup.model.hypervisor.HyperVisorType;
 import com.lemon.vmspinup.model.hypervisor.KVM;
 import com.lemon.vmspinup.model.hypervisor.LXC;
-import com.lemon.vmspinup.model.commands.VMCommands;
-import com.lemon.vmspinup.model.commands.VirtCommands;
 import com.lemon.vmspinup.model.listeners.VMStateListener;
 import com.lemon.vmspinup.model.vm.VirtualMachine;
 import org.libvirt.*;
@@ -18,14 +17,14 @@ import java.util.UUID;
 
 import static org.libvirt.Library.runEventLoop;
 
-public class VMSpinUp implements VMCommands, VirtCommands {
+public class VMSpinUp implements VMCreate, VMDestroy, VMList, VMResume, VMShutdown, VMStart, VMSuspend, VirtCommands {
 
     private static VMSpinUp VMSpinUp;
     private static HyperVisor DEFAULT_HYPERVISOR = KVM.getInstance();
     private VirtualMachine vm;
 
     // LV
-    private static Connect lvConn;
+    public static Connect lvConn;
     private static ConnectAuth lvCa;
     private Domain domain;
 
@@ -92,42 +91,26 @@ public class VMSpinUp implements VMCommands, VirtCommands {
     }
 
     @Override
-    public boolean vmDestroy(VirtualMachine vm) {
+    public void vmDestroy(VirtualMachine vm) {
         try {
             getInstance();
             lvConn.domainLookupByName(vm.getName()).destroy();
         } catch (LibvirtException e) {
             e.printStackTrace();
-            return false;
         }
-        return true;
     }
 
     @Override
-    public boolean vmCreateFromXML(String xml) {
-        try {
-            getInstance();
-            lvConn.domainCreateXML(xml, 0);
-        } catch (LibvirtException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
+    public void vmCreate(VirtualMachine vm) {
 
-    @Override
-    public boolean vmCreate(VirtualMachine vm) {
         try {
             getInstance();
             String xml = vm.toXML();
             domain = lvConn.domainCreateXML(xml, 0);
         } catch (LibvirtException e) {
             e.printStackTrace();
-            return false;
         }
         addListener(vm,domain);
-        return true;
-
     }
 
 
@@ -135,7 +118,6 @@ public class VMSpinUp implements VMCommands, VirtCommands {
 
         if(virtualMachine.getVMStateListener() == null)
             throw new IllegalArgumentException("No VMStateListener attached");
-
 
             VMStateListener listener = virtualMachine.getVMStateListener();
 
@@ -183,62 +165,51 @@ public class VMSpinUp implements VMCommands, VirtCommands {
     }
 
     @Override
-    public boolean vmDefinePersistent(VirtualMachine vm) {
-        try {
-            getInstance();
-            String xml = vm.toXML();
-            lvConn.domainDefineXML(xml);
-        } catch (LibvirtException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean vmStart(VirtualMachine vm) {
+    public void vmStart(VirtualMachine vm) {
         try {
             getInstance();
             String xml = vm.toXML();
             lvConn.domainCreateLinux(xml, 0);
         } catch (LibvirtException e) {
             e.printStackTrace();
-            return false;
         }
-        return true;
     }
 
     @Override
-    public boolean vmShutdown(VirtualMachine vm) {
-        return false;
-    }
-
-    @Override
-    public boolean vmSuspend(VirtualMachine vm) {
+    public void vmShutdown(VirtualMachine vm) {
         try {
             getInstance();
-            lvConn.domainLookupByName(vm.getName()).suspend();
+            domain = lvConn.domainLookupByID(vm.getID());
+            domain.shutdown();
         } catch (LibvirtException e) {
             e.printStackTrace();
-            return false;
         }
-        return true;
     }
 
     @Override
-    public boolean vmResume(VirtualMachine vm) {
+    public void vmSuspend(VirtualMachine vm) {
         try {
             getInstance();
-            lvConn.domainLookupByName(vm.getName()).resume();
-        } catch (LibvirtException e) {
-            e.printStackTrace();
-            return false;
+            domain = lvConn.domainLookupByID(vm.getID());
+            domain.shutdown();
+          } catch (LibvirtException e) {
+             e.printStackTrace();
         }
-        return true;
     }
 
     @Override
-    public ArrayList<VirtualMachine> listVMs() {
+    public void vmResume(VirtualMachine vm) {
+        try {
+            getInstance();
+            domain = lvConn.domainLookupByID(vm.getID());
+            domain.resume();
+        } catch (LibvirtException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public ArrayList<VirtualMachine> vmList() {
         int[] ids;
         ArrayList<VirtualMachine> vmList = new ArrayList<VirtualMachine>();
         try {

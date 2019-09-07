@@ -1,5 +1,6 @@
 package com.lemon.vmspinup.webservice;
 
+import com.jakewharton.fliptables.FlipTableConverters;
 import com.lemon.vmspinup.app.VMSpinUp;
 import com.lemon.vmspinup.model.vm.VirtualMachine;
 import org.libvirt.DomainInfo;
@@ -18,26 +19,23 @@ public class ResponseController {
     private VirtualMachine vm = null;
     private VMSpinUp vmSpinUp = VMSpinUp.getInstance();
     private DomainInfo df = null;
-    private StringBuilder stringBuilder = new StringBuilder();
 
-    @RequestMapping("/client")
-    public String client() {
-        return "Welcome to VMSpinUp REST API v0.1";
+    @RequestMapping("/")
+    public Response root() {
+        return new Response(createResponseID(),"VMSpinUp REST API v0.1");
+    }
+
+    @RequestMapping("/api")
+    public Response api() {
+        return new Response(createResponseID(),"VMSpinUp REST API v0.1");
     }
 
     @RequestMapping("/vmlist")
     public Response vmlist() {
 
-            ArrayList<VirtualMachine> vmList = vmSpinUp.listVMs();
+            ArrayList<VirtualMachine> vmList = vmSpinUp.vmList();
             assert vmList != null;
-            stringBuilder.append(String.format("%15s %3s %3s %3s %3s %3s %3s %3s %3s %3s %3s", "VM Instance", "|", "ID", "|", "OS", "|", "RAM", "|", "vCPUs", "|", "STATE"));
-            stringBuilder.append(String.format("%s", "-----------------------------------------------------------------------"));
-
-
-            for(VirtualMachine vm : vmList) {
-                stringBuilder.append(String.format("%15s %3s %3s %3s %3s %3s %3s %2.5s %3s %3s", vm.getName(), "|", vm.getID(), "|", "OS=HVM", "|", (vm.getRamAmount() / 1024 / 1024) + " GB", "|", vm.getvCPU(), "--state--"));
-            }
-            return new Response(this.createResponseID(), stringBuilder.toString());
+            return new Response(this.createResponseID(), FlipTableConverters.fromIterable(vmList, VirtualMachine.class));
     }
 
     @RequestMapping("/{vmName}/{info}")

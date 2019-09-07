@@ -1,15 +1,12 @@
 package com.lemon.vmspinup.cli;
 
 import com.lemon.vmspinup.app.VMSpinUp;
-import com.lemon.vmspinup.model.commands.VMStart;
-import com.lemon.vmspinup.model.commands.VMSuspend;
 import com.lemon.vmspinup.model.vm.VirtualMachine;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "suspend", mixinStandardHelpOptions = true, description = "-- Suspends a VM Instance")
-//@CommandLine.Option()
 
-public class CmdVmSuspend implements Runnable, VMSuspend {
+public class CmdVmSuspend implements Runnable {
 
     @CommandLine.ParentCommand
 
@@ -18,15 +15,8 @@ public class CmdVmSuspend implements Runnable, VMSuspend {
     @Override
     public void run() {
             VMSpinUp vmSpinUp = VMSpinUp.getInstance();
-            VirtualMachine vm;
-            vm = vmSpinUp.vmLookupByName("ubuntu-1");
-            this.vmSuspend(vm);
+            VirtualMachine vm = vmSpinUp.vmLookupByName("ubuntu5");
+            vmSpinUp.vmSuspend(vm);
     }
 
-    @Override
-    public void vmSuspend(VirtualMachine vm) {
-        VMSpinUp vmSpinUp = VMSpinUp.getInstance();
-        vmSpinUp.vmSuspend(vm);
-
-    }
 }

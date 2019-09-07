@@ -2,12 +2,9 @@ package com.lemon.vmspinup.model.vm;
 
 import com.lemon.vmspinup.app.VMSpinUp;
 import com.lemon.vmspinup.model.hypervisor.HyperVisor;
-import com.lemon.vmspinup.model.hypervisor.KVM;
 import com.lemon.vmspinup.model.listeners.VMStateListener;
-import com.lemon.vmspinup.model.states.VMState;
-import com.lemon.vmspinup.model.storage.StorageVolume;
+import com.lemon.vmspinup.model.storage.VMStorageVolume;
 import org.libvirt.DomainInfo;
-import org.libvirt.event.DomainEventType;
 
 import java.util.UUID;
 
@@ -29,7 +26,7 @@ public class VirtualMachine {
     private String os = "hvm";                                                          // OS name (e.g hvm)
     private String arch = "x86_64";                                                     // OS architecture
     private int storageAmount;                                                          // storage amount (for creating!)
-    private StorageVolume storageVolume;                                                // storage volume image path
+    private VMStorageVolume VMStorageVolume;                                                // storage volume image path
     private HyperVisor hyperVisor = VMSpinUp.getHyperVisor();                           // default HyperVisor type
 
     private VMStateListener vmStateListener;                                            // VM state / event listener
@@ -39,11 +36,11 @@ public class VirtualMachine {
     }
 
     // minimum configuration
-    public VirtualMachine(String name, long ramAmount, int vCPU, StorageVolume storageVolume) {
+    public VirtualMachine(String name, long ramAmount, int vCPU, VMStorageVolume VMStorageVolume) {
         this.name = name;
         this.ramAmount = ramAmount;
         this.vCPU = vCPU;
-        this.storageVolume = storageVolume;
+        this.VMStorageVolume = VMStorageVolume;
     }
 
     public void setHyperVisor(HyperVisor hyperVisor) {
@@ -66,8 +63,8 @@ public class VirtualMachine {
         this.storageAmount = storageAmount;
     }
 
-    public void setStorageVolume(StorageVolume storageVolume) {
-        this.storageVolume = storageVolume;
+    public void setVMStorageVolume(VMStorageVolume VMStorageVolume) {
+        this.VMStorageVolume = VMStorageVolume;
     }
 
     public void setUUID(UUID uuid) {
@@ -99,8 +96,8 @@ public class VirtualMachine {
         return this.id;
     }
 
-    public StorageVolume getStorageVolume() {
-        return this.storageVolume;
+    public VMStorageVolume getVMStorageVolume() {
+        return this.VMStorageVolume;
     }
 
     public String toXML(HyperVisor hv, String name, long memory, int vcpu, String os, String arch) {
@@ -134,7 +131,7 @@ public class VirtualMachine {
                             "</devices>"+ "\n" +
                             "</domain>";
 
-            return String.format(XML, this.hyperVisor.getType(), this.name, this.ramAmount, this.vCPU, this.arch, this.os, this.storageVolume.getPath());
+            return String.format(XML, this.hyperVisor.getType(), this.name, this.ramAmount, this.vCPU, this.arch, this.os, this.VMStorageVolume.getPath());
     }
 
 

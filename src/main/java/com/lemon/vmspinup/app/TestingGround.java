@@ -1,6 +1,9 @@
 package com.lemon.vmspinup.app;
 
 import com.lemon.vmspinup.cli.CliCommands;
+import org.libvirt.LibvirtException;
+import org.libvirt.StoragePool;
+import org.libvirt.StorageVol;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,9 +34,16 @@ public class TestingGround {
                     "   \\ \\ / /| |   | |   _____) ) |_| | | | | | |___| | |      \n" +
                     "    \\___/ |_|   |_|  (______/|  __/|_|_| |_|\\_____/|_|      \n" +
                     "                             |_|                            \n" +
-                    "                                              "+"v0.1" + "by xuw");
+                    "                                                " + "v0.1" + " by xuw");
 
             CliCommands.CommandLine();
+
+
+            try {
+                String[] storagePool = VMSpinUp.getInstance().lvConn.listStoragePools();
+            } catch (LibvirtException e) {
+                e.printStackTrace();
+            }
 
             /*
             QNameMap qmap = new QNameMap();

@@ -2,7 +2,7 @@ package com.lemon.vmspinup.model.storage;
 
 import java.util.UUID;
 
-public class StoragePool {
+public class VMStoragePool {
 
     private String name;
     private UUID uuid;

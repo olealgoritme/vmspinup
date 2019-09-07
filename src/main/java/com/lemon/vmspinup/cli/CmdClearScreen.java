@@ -1,7 +1,6 @@
 package com.lemon.vmspinup.cli;
 
 import picocli.CommandLine;
-import java.io.IOException;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "clear", mixinStandardHelpOptions = true, description = "-- Clears screen")

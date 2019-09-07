@@ -1,6 +1,6 @@
 package com.lemon.vmspinup.model.storage;
 
-public class StorageVolume {
+public class VMStorageVolume {
 /*
 
     raw: a plain file
@@ -43,7 +43,7 @@ public class StorageVolume {
 
     private String path;
 
-    public StorageVolume(String path) {
+    public VMStorageVolume(String path) {
         this.path = path;
     }
 

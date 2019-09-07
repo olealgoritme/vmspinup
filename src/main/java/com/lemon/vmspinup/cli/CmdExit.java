@@ -2,7 +2,6 @@ package com.lemon.vmspinup.cli;
 
 import com.lemon.vmspinup.app.VMSpinUp;
 import picocli.CommandLine;
-import java.io.IOException;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "exit", mixinStandardHelpOptions = true, description = "-- Exits VmSpinUp CLI")

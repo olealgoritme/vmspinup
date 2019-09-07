@@ -1,14 +1,12 @@
 package com.lemon.vmspinup.cli;
 
 import com.lemon.vmspinup.app.VMSpinUp;
-import com.lemon.vmspinup.model.commands.VMDestroy;
 import com.lemon.vmspinup.model.vm.VirtualMachine;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "destroy", mixinStandardHelpOptions = true, description = "-- Destroys a VM Instance")
-//@CommandLine.Option()
 
-public class CmdVmDestroy implements Runnable, VMDestroy {
+public class CmdVmDestroy implements Runnable {
 
     @CommandLine.ParentCommand
 
@@ -17,14 +15,7 @@ public class CmdVmDestroy implements Runnable, VMDestroy {
     @Override
     public void run() {
             VMSpinUp vmSpinUp = VMSpinUp.getInstance();
-            VirtualMachine vm;
-            vm = vmSpinUp.vmLookupByName("ubuntu-1");
-            this.vmDestroy(vm);
-    }
-
-    @Override
-    public void vmDestroy(VirtualMachine vm) {
-        VMSpinUp vmSpinUp = VMSpinUp.getInstance();
-        vmSpinUp.vmDestroy(vm);
+            VirtualMachine vm = vmSpinUp.vmLookupByName("ubuntu5");
+            vmSpinUp.vmDestroy(vm);
     }
 }
