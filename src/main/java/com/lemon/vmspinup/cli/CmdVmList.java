@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 @CommandLine.Command(name = "list", mixinStandardHelpOptions = true, description = "-- Lists VM Instances")
 
-public class CmdVmListAllVMs implements Runnable {
+public class CmdVmList implements Runnable {
 
     @CommandLine.ParentCommand
     private CliCommands parent = null;

@@ -1,5 +1,6 @@
 package com.lemon.vmspinup.app;
 
+import com.lemon.vmspinup.error.VMSpinUpException;
 import com.lemon.vmspinup.model.commands.*;
 import com.lemon.vmspinup.model.hypervisor.HyperVisor;
 import com.lemon.vmspinup.model.hypervisor.HyperVisorType;
@@ -15,27 +16,48 @@ import org.libvirt.event.LifecycleListener;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static org.libvirt.Library.initEventLoop;
 import static org.libvirt.Library.runEventLoop;
 
-public class VMSpinUp implements VMCreate, VMDestroy, VMList, VMResume, VMShutdown, VMStart, VMSuspend, VirtCommands {
+public class VMSpinUp implements VMCreate, VMDestroy,
+                                 VMList, VMResume,
+                                 VMShutdown, VMStart,
+                                 VMSuspend, LookupCommands {
 
     private static VMSpinUp VMSpinUp;
-    private static HyperVisor DEFAULT_HYPERVISOR = KVM.getInstance();
+    public static HyperVisor DEFAULT_HYPERVISOR = KVM.getInstance();
     private VirtualMachine vm;
 
     // LV
     public static Connect lvConn;
     private static ConnectAuth lvCa;
     private Domain domain;
+    protected Thread eventThread;
 
-
-    private VMSpinUp() {
+    private VMSpinUp() throws VMSpinUpException {
         lvCa = new ConnectAuthDefault();
         try {
             lvConn = new Connect(DEFAULT_HYPERVISOR.getUriString(), lvCa, 0);
+            eventThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                   initEventLoop();
+                } catch (LibvirtException e) {
+                    e.printStackTrace();
+                } finally {
+                    System.out.println("starting event loop");
+                }
+            }
+        });
+
+            eventThread.start();
+
         } catch (LibvirtException e) {
             e.printStackTrace();
+            throw new VMSpinUpException("Can't connect to HyperVisor" + DEFAULT_HYPERVISOR.getName());
         }
+
     }
 
     @Override
@@ -43,8 +65,7 @@ public class VMSpinUp implements VMCreate, VMDestroy, VMList, VMResume, VMShutdo
         try {
             getInstance();
             domain = lvConn.domainLookupByName(vmName);
-            createVirtualMachine();
-
+            createVirtualMachine(domain);
         } catch (LibvirtException e) {
             e.printStackTrace();
             return null;
@@ -57,7 +78,7 @@ public class VMSpinUp implements VMCreate, VMDestroy, VMList, VMResume, VMShutdo
         try {
             getInstance();
             domain = lvConn.domainLookupByID(id);
-            createVirtualMachine();
+            createVirtualMachine(domain);
         } catch (LibvirtException e) {
             e.printStackTrace();
             return null;
@@ -65,7 +86,7 @@ public class VMSpinUp implements VMCreate, VMDestroy, VMList, VMResume, VMShutdo
             return vm;
     }
 
-    private void createVirtualMachine() throws LibvirtException {
+    private VirtualMachine createVirtualMachine(Domain domain) throws LibvirtException {
         vm = new VirtualMachine();
         vm.setVMState(domain.getEventStatus());
         vm.setHyperVisor(DEFAULT_HYPERVISOR);
@@ -74,6 +95,7 @@ public class VMSpinUp implements VMCreate, VMDestroy, VMList, VMResume, VMShutdo
         vm.setName(domain.getName());
         vm.setvCPU(domain.getMaxVcpus());
         vm.setRamAmount(domain.getMaxMemory());
+        return vm;
     }
 
     @Override
@@ -81,8 +103,7 @@ public class VMSpinUp implements VMCreate, VMDestroy, VMList, VMResume, VMShutdo
         try {
             getInstance();
             domain = lvConn.domainLookupByUUID(uuid);
-            createVirtualMachine();
-
+            vm = createVirtualMachine(domain);
         } catch (LibvirtException e) {
             e.printStackTrace();
             return null;
@@ -94,7 +115,8 @@ public class VMSpinUp implements VMCreate, VMDestroy, VMList, VMResume, VMShutdo
     public void vmDestroy(VirtualMachine vm) {
         try {
             getInstance();
-            lvConn.domainLookupByName(vm.getName()).destroy();
+            domain = lvConn.domainLookupByUUID(vm.getUUID());
+            domain.destroy();
         } catch (LibvirtException e) {
             e.printStackTrace();
         }
@@ -102,7 +124,6 @@ public class VMSpinUp implements VMCreate, VMDestroy, VMList, VMResume, VMShutdo
 
     @Override
     public void vmCreate(VirtualMachine vm) {
-
         try {
             getInstance();
             String xml = vm.toXML();
@@ -116,52 +137,45 @@ public class VMSpinUp implements VMCreate, VMDestroy, VMList, VMResume, VMShutdo
 
     private void addListener(final VirtualMachine virtualMachine, final Domain domain) {
 
-        if(virtualMachine.getVMStateListener() == null)
-            throw new IllegalArgumentException("No VMStateListener attached");
-
             VMStateListener listener = virtualMachine.getVMStateListener();
+            LifecycleListener lifecycleListener = new LifecycleListener() {
+                                        @Override
+                                            public void onLifecycleChange(Domain d, DomainEvent event) {
 
-            Thread thread = new Thread(() -> {
-                try {
-                    runEventLoop();
-                    System.out.println("STARTING EVENT LOOP");
+                                                    System.out.println("DOMAINEVENT: " + event);
+                                                if (event.getType() == DomainEventType.DEFINED) {
+                                                    virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
+                                                    listener.onCreated(virtualMachine);
 
-                domain.addLifecycleListener(new LifecycleListener() {
-                    @Override
-                    public void onLifecycleChange(Domain d, DomainEvent event) {
+                                            } else if (event.getType() == DomainEventType.STARTED) {
+                                                virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
+                                                listener.onStarted(virtualMachine);
 
-                        System.out.println("DOMAINEVENT: " + event);
-                        if (event.getType() == DomainEventType.DEFINED) {
-                            virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
-                            listener.onCreated(virtualMachine);
+                                            } else if (event.getType() == DomainEventType.SUSPENDED) {
+                                                virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_PAUSED);
+                                                listener.onSuspended(virtualMachine);
 
-                        } else if (event.getType() == DomainEventType.STARTED) {
-                            virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
-                            listener.onStarted(virtualMachine);
+                                                } else if (event.getType() == DomainEventType.RESUMED) {
+                                                    virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
+                                                    listener.onResumed(virtualMachine);
 
-                        } else if (event.getType() == DomainEventType.SUSPENDED) {
-                            virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_PAUSED);
-                            listener.onSuspended(virtualMachine);
+                                                } else if (event.getType() == DomainEventType.SHUTDOWN) {
+                                                    virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_SHUTDOWN);
+                                                    listener.onShutdown(virtualMachine);
 
-                        } else if (event.getType() == DomainEventType.RESUMED) {
-                            virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
-                            listener.onResumed(virtualMachine);
+                                            } else if (event.getType() == DomainEventType.CRASHED) {
+                                                virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
+                                                listener.onCrashed(virtualMachine);
+                                            }
+                                        }
+                                        };
 
-                        } else if (event.getType() == DomainEventType.SHUTDOWN) {
-                            virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_SHUTDOWN);
-                            listener.onShutdown(virtualMachine);
-
-                        } else if (event.getType() == DomainEventType.CRASHED) {
-                            virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
-                            listener.onCrashed(virtualMachine);
-                        }
-                    }
-                });
-            } catch (InterruptedException | LibvirtException ex) {
-                ex.printStackTrace();
-            }
-       });
-       thread.start();
+        try {
+            domain.addLifecycleListener(lifecycleListener);
+            virtualMachine.setVMStateListener(listener);
+        } catch (LibvirtException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -179,7 +193,7 @@ public class VMSpinUp implements VMCreate, VMDestroy, VMList, VMResume, VMShutdo
     public void vmShutdown(VirtualMachine vm) {
         try {
             getInstance();
-            domain = lvConn.domainLookupByID(vm.getID());
+            domain = lvConn.domainLookupByUUID(vm.getUUID());
             domain.shutdown();
         } catch (LibvirtException e) {
             e.printStackTrace();
@@ -190,8 +204,8 @@ public class VMSpinUp implements VMCreate, VMDestroy, VMList, VMResume, VMShutdo
     public void vmSuspend(VirtualMachine vm) {
         try {
             getInstance();
-            domain = lvConn.domainLookupByID(vm.getID());
-            domain.shutdown();
+            domain = lvConn.domainLookupByUUID(vm.getUUID());
+            domain.suspend();
           } catch (LibvirtException e) {
              e.printStackTrace();
         }
@@ -201,7 +215,7 @@ public class VMSpinUp implements VMCreate, VMDestroy, VMList, VMResume, VMShutdo
     public void vmResume(VirtualMachine vm) {
         try {
             getInstance();
-            domain = lvConn.domainLookupByID(vm.getID());
+            domain = lvConn.domainLookupByUUID(vm.getUUID());
             domain.resume();
         } catch (LibvirtException e) {
             e.printStackTrace();
@@ -216,7 +230,7 @@ public class VMSpinUp implements VMCreate, VMDestroy, VMList, VMResume, VMShutdo
             getInstance();
             ids = lvConn.listDomains();
             for (int i : ids) {
-                vm = VMSpinUp.vmLookupByID((i));
+                this.vm = this.vmLookupByID((i));
                 vmList.add(vm);
             }
 
@@ -272,7 +286,13 @@ public class VMSpinUp implements VMCreate, VMDestroy, VMList, VMResume, VMShutdo
                 VMSpinUp = new VMSpinUp();
         } catch (LibvirtException e) {
             e.printStackTrace();
-            VMSpinUp = new VMSpinUp();
+            try {
+                VMSpinUp = new VMSpinUp();
+            } catch (VMSpinUpException ex) {
+                ex.printStackTrace();
+            }
+        } catch (VMSpinUpException e) {
+            e.printStackTrace();
         }
         return VMSpinUp;
     }

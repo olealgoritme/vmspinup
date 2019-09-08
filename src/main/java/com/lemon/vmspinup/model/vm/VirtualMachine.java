@@ -9,9 +9,9 @@ import org.libvirt.DomainInfo;
 import java.util.UUID;
 
 /*
-*  Layer between the horrendous libvirt XML domain object
-*  and our VM instance object
-*
+*  abstraction Layer between the horrendous libvirt XML domain object
+*  reference and our VM instance object
+*  this is (will be) a rewrite of the libvirt bindings API
  */
 
 public class VirtualMachine {
@@ -25,9 +25,8 @@ public class VirtualMachine {
 
     private String os = "hvm";                                                          // OS name (e.g hvm)
     private String arch = "x86_64";                                                     // OS architecture
-    private int storageAmount;                                                          // storage amount (for creating!)
     private VMStorageVolume VMStorageVolume;                                                // storage volume image path
-    private HyperVisor hyperVisor = VMSpinUp.getHyperVisor();                           // default HyperVisor type
+    private HyperVisor hyperVisor = VMSpinUp.DEFAULT_HYPERVISOR;                           // default HyperVisor type
 
     private VMStateListener vmStateListener;                                            // VM state / event listener
     private DomainInfo.DomainState vmState = DomainInfo.DomainState.VIR_DOMAIN_NOSTATE; // default VM state
@@ -57,10 +56,6 @@ public class VirtualMachine {
 
     public void setRamAmount(long ramAmount) {
         this.ramAmount = ramAmount;
-    }
-
-    public void setStorageAmount(int storageAmount) {
-        this.storageAmount = storageAmount;
     }
 
     public void setVMStorageVolume(VMStorageVolume VMStorageVolume) {

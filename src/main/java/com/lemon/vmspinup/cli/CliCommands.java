@@ -19,9 +19,11 @@ import java.io.PrintWriter;
         subcommands = {
                 CmdClearScreen.class,
                 CmdExit.class,
+                CmdStoragePoolList.class,
+                CmdStorageVolumeList.class,
                 CmdVmCreate.class,
                 CmdVmDestroy.class,
-                CmdVmListAllVMs.class,
+                CmdVmList.class,
                 CmdVmResume.class,
                 CmdVmShutdown.class,
                 CmdVmStart.class,

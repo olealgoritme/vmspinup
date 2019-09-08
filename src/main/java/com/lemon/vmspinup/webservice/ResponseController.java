@@ -22,12 +22,12 @@ public class ResponseController {
 
     @RequestMapping("/")
     public Response root() {
-        return new Response(createResponseID(),"VMSpinUp REST API v0.1");
+        return new Response(this.createResponseID(),"VMSpinUp REST API v0.1");
     }
 
     @RequestMapping("/api")
     public Response api() {
-        return new Response(createResponseID(),"VMSpinUp REST API v0.1");
+        return new Response(this.createResponseID(),"VMSpinUp REST API v0.1");
     }
 
     @RequestMapping("/vmlist")

@@ -19,12 +19,13 @@ public class CmdVmCreate implements Runnable {
     public void run() {
 
             VMSpinUp vmSpinUp = VMSpinUp.getInstance();
+
             VirtualMachine vm = new VirtualMachine();
             vm.setName("ubuntu5");
             vm.setRamAmount(2097152);
             vm.setvCPU(2);
             vm.setVMStorageVolume(new VMStorageVolume("/mnt/virtimages/ubuntu5.img"));
-            vm.setVMStateListener(new VirtualMachineCallback());
+
             vmSpinUp.vmCreate(vm);
     }
 }

@@ -481,7 +481,7 @@ public class Connect {
         }
     }
 
-    private void domainEventRegister(Domain domain, int eventID, VirDomainEventCallback cb, EventListener l) throws LibvirtException {
+     public void domainEventRegister(Domain domain, int eventID, VirDomainEventCallback cb, EventListener l) throws LibvirtException {
         Map<EventListener, RegisteredEventListener> handlers = eventListeners[eventID];
 
         if (handlers == null) {

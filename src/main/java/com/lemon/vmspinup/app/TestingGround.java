@@ -1,6 +1,8 @@
 package com.lemon.vmspinup.app;
 
+import com.jakewharton.fliptables.FlipTableConverters;
 import com.lemon.vmspinup.cli.CliCommands;
+import com.lemon.vmspinup.model.vm.VirtualMachine;
 import org.libvirt.LibvirtException;
 import org.libvirt.StoragePool;
 import org.libvirt.StorageVol;
@@ -9,6 +11,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import com.lemon.vmspinup.webservice.ResponseController;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
+import static org.libvirt.Library.runEventLoop;
 
 
 @SpringBootApplication
@@ -36,14 +43,12 @@ public class TestingGround {
                     "                             |_|                            \n" +
                     "                                                " + "v0.1" + " by xuw");
 
+
             CliCommands.CommandLine();
 
 
-            try {
-                String[] storagePool = VMSpinUp.getInstance().lvConn.listStoragePools();
-            } catch (LibvirtException e) {
-                e.printStackTrace();
-            }
+
+
 
             /*
             QNameMap qmap = new QNameMap();
