@@ -2,8 +2,6 @@ package com.lemon.vmspinup.cli;
 
 import com.jakewharton.fliptables.FlipTableConverters;
 import com.lemon.vmspinup.app.VMSpinUp;
-import com.lemon.vmspinup.model.storage.VMStorageVolume;
-import com.lemon.vmspinup.model.vm.VirtualMachine;
 import org.libvirt.LibvirtException;
 import org.libvirt.StoragePool;
 import picocli.CommandLine;
@@ -23,11 +21,11 @@ public class CmdStoragePoolList implements Runnable {
     public void run() {
 
         try {
-            String[] poolList = VMSpinUp.getInstance().lvConn.listStoragePools();
+            String[] poolList = VMSpinUp.connect.listStoragePools();
             ArrayList<StoragePool> storagePools = new ArrayList<>();
 
             for(String pool : poolList) {
-                StoragePool storagePool = VMSpinUp.getInstance().lvConn.storagePoolLookupByName(pool);
+                StoragePool storagePool = VMSpinUp.connect.storagePoolLookupByName(pool);
                 storagePools.add(storagePool);
             }
 

@@ -1,4 +1,4 @@
-package com.lemon.vmspinup.model.commands;
+package com.lemon.vmspinup.model.commands.vm;
 
 public interface VMCreateFromXML {
 

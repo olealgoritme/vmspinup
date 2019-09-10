@@ -2,6 +2,7 @@ package com.lemon.vmspinup.cli;
 
 import com.jakewharton.fliptables.FlipTableConverters;
 import com.lemon.vmspinup.app.VMSpinUp;
+import com.lemon.vmspinup.model.storage.VMStorageVolume;
 import org.libvirt.LibvirtException;
 import org.libvirt.StoragePool;
 import org.libvirt.StorageVol;
@@ -22,14 +23,18 @@ public class CmdStorageVolumeList implements Runnable {
     public void run() {
 
         try {
-            StoragePool pool = VMSpinUp.getInstance().lvConn.storagePoolLookupByName("virtimages");
+
+            String[] poolList = VMSpinUp.connect.listStoragePools();
             ArrayList<StorageVol> storageVolumes = new ArrayList<>();
 
-            String[] volumes = pool.listVolumes();
+            for(String pool : poolList) {
+                StoragePool storagePool = VMSpinUp.connect.storagePoolLookupByName(pool);
+                String[] volumes = storagePool.listVolumes();
 
-            for(String volume : volumes) {
-                StorageVol storageVol = pool.storageVolLookupByName(volume);
-                storageVolumes.add(storageVol);
+                for(String volume : volumes) {
+                    StorageVol storageVol = storagePool.storageVolLookupByName(volume);
+                    storageVolumes.add(storageVol);
+                }
             }
 
             System.out.println(FlipTableConverters.fromIterable(storageVolumes, StorageVol.class));

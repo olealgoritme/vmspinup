@@ -3,7 +3,6 @@ package com.lemon.vmspinup.cli;
 import com.lemon.vmspinup.app.VMSpinUp;
 import com.lemon.vmspinup.model.storage.VMStorageVolume;
 import com.lemon.vmspinup.model.vm.VirtualMachine;
-import com.lemon.vmspinup.model.vm.VirtualMachineCallback;
 import picocli.CommandLine;
 
 
@@ -24,7 +23,7 @@ public class CmdVmCreate implements Runnable {
             vm.setName("ubuntu5");
             vm.setRamAmount(2097152);
             vm.setvCPU(2);
-            vm.setVMStorageVolume(new VMStorageVolume("/mnt/virtimages/ubuntu5.img"));
+            vm.setVMStorageVolume(new VMStorageVolume("/mnt/instances/vm/ole1.qcow2"));
 
             vmSpinUp.vmCreate(vm);
     }

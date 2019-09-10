@@ -1693,7 +1693,6 @@ public class Connect {
      * the host is restarted
      *
      * @param xmlDesc XML description for new pool
-     * @param flags   future flags, use 0 for now
      * @return StoragePool object
      * @throws LibvirtException
      */

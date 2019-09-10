@@ -2,6 +2,7 @@ package com.lemon.vmspinup.app;
 
 import com.jakewharton.fliptables.FlipTableConverters;
 import com.lemon.vmspinup.cli.CliCommands;
+import com.lemon.vmspinup.model.storage.VMStoragePool;
 import com.lemon.vmspinup.model.vm.VirtualMachine;
 import org.libvirt.LibvirtException;
 import org.libvirt.StoragePool;
@@ -45,10 +46,6 @@ public class TestingGround {
 
 
             CliCommands.CommandLine();
-
-
-
-
 
             /*
             QNameMap qmap = new QNameMap();
