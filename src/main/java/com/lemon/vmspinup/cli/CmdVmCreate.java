@@ -21,8 +21,8 @@ public class CmdVmCreate implements Runnable {
 
             VirtualMachine vm = new VirtualMachine();
             vm.setName("ubuntu5");
-            vm.setRamAmount(2097152);
-            vm.setvCPU(2);
+            vm.setRamAmount(2097152 * 3);
+            vm.setvCPU(6);
             vm.setVMStorageVolume(new VMStorageVolume("/mnt/instances/vm/ole1.qcow2"));
 
             vmSpinUp.vmCreate(vm);

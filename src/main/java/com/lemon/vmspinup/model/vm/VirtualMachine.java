@@ -110,6 +110,10 @@ public class VirtualMachine {
                             "<type arch='%s'>%s</type>"+ "\n" +
                             "</os>"+ "\n" +
                             "<clock sync='localtime'/>"+ "\n" +
+                            "<features>" + "\n" +
+                            "<acpi/>" + "\n" +
+                            "<apic/>" + "\n" +
+                            "</features>" + "\n" +
                             "<devices>"+ "\n" +
                             "<emulator>/usr/bin/qemu-system-x86_64</emulator>"+ "\n" +
                             "<disk type='file' device='disk'>"+ "\n" +
