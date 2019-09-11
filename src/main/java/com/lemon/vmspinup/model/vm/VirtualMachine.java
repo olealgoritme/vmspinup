@@ -125,11 +125,25 @@ public class VirtualMachine {
                             "<acpi/>" + "\n" +
                             "<apic/>" + "\n" +
                             "</features>" + "\n" +
+
+
                             "<on_poweroff>destroy</on_poweroff>" + "\n" +
                             "<on_reboot>restart</on_reboot>" + "\n" +
                             "<on_crash>restart</on_crash>" + "\n" +
                             "<devices>"+ "\n" +
+
+                            // quirk workaround, needed serial/console
+                            "<serial type='pty'>" + "\n" +          // IMPORTANT TO PUT SERIAL / CONSOLE FIRST IN <DEVICES> !!
+                            "<target port='0'/>" + "\n" +
+                            "</serial>" + "\n" +
+                            "<console type='pty'>" + "\n" +
+                            "<target type='serial' port='0'/>" + "\n" +
+                            "</console>" + "\n" +
+
+                            // EMULATOR
                             "<emulator>/usr/bin/qemu-system-x86_64</emulator>"+ "\n" +
+
+                            // DISK 1
                             "<disk type='file' device='disk'>"+ "\n" +
                             "<driver name='qemu' type='qcow2'/>"+ "\n" +
                             "<source file='%s'/>"+ "\n" +
@@ -151,13 +165,6 @@ public class VirtualMachine {
                             "<graphics type='vnc' port='-1' autoport='yes'/>"+ "\n" +
                             "</devices>"+ "\n" +
 
-                            // quirk? adding console to fix not booting
-                            "<serial type='pty'>" + "\n" +
-                            "<target port='0'/>" + "\n" +
-                            "</serial>" + "\n" +
-                            "<console type='pty'>" + "\n" +
-                            "<target type='serial' port='0'/>" + "\n" +
-                            "</console>" + "\n" +
                             "</domain>";
 
 
