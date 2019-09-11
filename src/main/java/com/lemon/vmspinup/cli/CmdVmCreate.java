@@ -16,7 +16,6 @@ import static com.lemon.vmspinup.model.storage.VMStorageVolume.*;
         })
 
 public class CmdVmCreate implements Runnable {
-    //@CommandLine.Option(names = {"-h", "--help"}, usageHelp = false)
 
     @Override
     public void run() {
@@ -39,7 +38,6 @@ public class CmdVmCreate implements Runnable {
                     "cpu: " + cpu + "\n" +
                     "ram: " + ram + "\n" +
                     "disk: " + disk + "\n");
-
             long bytesRam = new ByteCalc().size(ram).to(ByteCalc.SIZE.GIGABYTE);
             long bytesDisk = new ByteCalc().size(disk).to(ByteCalc.SIZE.GIGABYTE);
 
