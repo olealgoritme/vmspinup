@@ -2,6 +2,7 @@ package com.lemon.vmspinup.model.commands.vm;
 
 import com.lemon.vmspinup.app.VMSpinUp;
 import com.lemon.vmspinup.model.listeners.VMStateListener;
+import com.lemon.vmspinup.model.storage.VMStoragePool;
 import com.lemon.vmspinup.model.vm.VirtualMachine;
 import org.libvirt.Domain;
 import org.libvirt.DomainInfo;
@@ -73,9 +74,19 @@ public interface VMAllCommands {
         }
     }
 
-    default void vmCreate(VirtualMachine vm) {
+    default boolean vmCreate(VirtualMachine vm) {
             try {
             VMSpinUp.connect.domainCreateXML(vm.toXML(), 0);
+        } catch (LibvirtException e) {
+            e.printStackTrace();
+            return false;
+        }
+            return true;
+    }
+    default void vmReboot(VirtualMachine vm) {
+        try {
+            VMSpinUp.domain = VMSpinUp.connect.domainLookupByUUID(vm.getUUID());
+            VMSpinUp.domain.reboot(0);
         } catch (LibvirtException e) {
             e.printStackTrace();
         }

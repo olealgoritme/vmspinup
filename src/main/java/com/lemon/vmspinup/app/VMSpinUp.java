@@ -1,6 +1,7 @@
 package com.lemon.vmspinup.app;
 
 import com.lemon.vmspinup.error.VMSpinUpException;
+import com.lemon.vmspinup.model.commands.storage.storagepool.PoolAllCommands;
 import com.lemon.vmspinup.model.commands.storage.storagevolume.StorageAllCommands;
 import com.lemon.vmspinup.model.commands.vm.*;
 import com.lemon.vmspinup.model.hypervisor.HyperVisor;
@@ -12,9 +13,7 @@ import org.libvirt.*;
 
 import static org.libvirt.Library.initEventLoop;
 
-public class VMSpinUp implements VMAllCommands, StorageAllCommands {
-        //PoolCreate, PoolDefineXML, PoolDestroy, PoolList, PoolLookup, PoolStart, PoolUndefine,
-        //StorageCreate, StorageDefineXML, StorageDestroy, StorageList, StorageLookup, StorageStart, StorageUndefine {
+public class VMSpinUp implements VMAllCommands, StorageAllCommands, PoolAllCommands {
 
     private static VMSpinUp instance;
     public static HyperVisor DEFAULT_HYPERVISOR = KVM.getInstance();

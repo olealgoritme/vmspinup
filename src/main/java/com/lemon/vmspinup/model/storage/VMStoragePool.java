@@ -5,10 +5,70 @@ import java.util.UUID;
 public class VMStoragePool {
 
     private String name;
+    private String path;
     private UUID uuid;
     private long allocation;
     private long capacity;
     private long available;
+
+
+    public VMStoragePool() {
+    }
+
+    public VMStoragePool(String name, String path, long allocation, long capacity) {
+        this.name = name;
+        this.path = path;
+        this.allocation = allocation;
+        this.capacity = capacity;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public long getAllocation() {
+        return allocation;
+    }
+
+    public void setAllocation(long allocation) {
+        this.allocation = allocation;
+    }
+
+    public long getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(long capacity) {
+        this.capacity = capacity;
+    }
+
+    public long getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(long available) {
+        this.available = available;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 
     /*
 TODO: Implement dynamic

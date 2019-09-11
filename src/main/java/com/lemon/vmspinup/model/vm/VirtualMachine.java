@@ -1,11 +1,16 @@
 package com.lemon.vmspinup.model.vm;
 
 import com.lemon.vmspinup.app.VMSpinUp;
+import com.lemon.vmspinup.app.VMUserData;
 import com.lemon.vmspinup.model.hypervisor.HyperVisor;
 import com.lemon.vmspinup.model.listeners.VMStateListener;
+import com.lemon.vmspinup.model.storage.VMStoragePool;
 import com.lemon.vmspinup.model.storage.VMStorageVolume;
 import org.libvirt.DomainInfo;
+import org.libvirt.LibvirtException;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.UUID;
 
 /*
@@ -25,7 +30,8 @@ public class VirtualMachine {
 
     private String os = "hvm";                                                          // OS name (e.g hvm)
     private String arch = "x86_64";                                                     // OS architecture
-    private VMStorageVolume VMStorageVolume;                                                // storage volume image path
+    private ArrayList<VMStorageVolume> storageVolumes = new ArrayList<>();              // storage volumes
+    private VMUserData vmUserData = new VMUserData("/mnt/instances/vm/ole1-user-data.img");  // object for VM user-meta-data (used in conjuction with cloudimages to set hostname, networks, passwords etc)
     private HyperVisor hyperVisor = VMSpinUp.DEFAULT_HYPERVISOR;                           // default HyperVisor type
 
     private VMStateListener vmStateListener;                                            // VM state / event listener
@@ -35,11 +41,10 @@ public class VirtualMachine {
     }
 
     // minimum configuration
-    public VirtualMachine(String name, long ramAmount, int vCPU, VMStorageVolume VMStorageVolume) {
+    public VirtualMachine(String name, long ramAmount, int vCPU) {
         this.name = name;
         this.ramAmount = ramAmount;
         this.vCPU = vCPU;
-        this.VMStorageVolume = VMStorageVolume;
     }
 
     public void setHyperVisor(HyperVisor hyperVisor) {
@@ -58,8 +63,13 @@ public class VirtualMachine {
         this.ramAmount = ramAmount;
     }
 
-    public void setVMStorageVolume(VMStorageVolume VMStorageVolume) {
-        this.VMStorageVolume = VMStorageVolume;
+    public void addStorageVolume(VMStorageVolume volume) {
+        this.storageVolumes.add(volume);
+    }
+
+    public void removeStorageVolumeByKey(String key) {
+        VMSpinUp vmSpinUp = VMSpinUp.getInstance();
+            this.storageVolumes.remove(vmSpinUp.storageVolumeLookupByKey(key));
     }
 
     public void setUUID(UUID uuid) {
@@ -91,8 +101,8 @@ public class VirtualMachine {
         return this.id;
     }
 
-    public VMStorageVolume getVMStorageVolume() {
-        return this.VMStorageVolume;
+    public ArrayList<VMStorageVolume> getVMStorageVolumes() {
+        return this.storageVolumes;
     }
 
     public String toXML(HyperVisor hv, String name, long memory, int vcpu, String os, String arch) {
@@ -101,10 +111,11 @@ public class VirtualMachine {
     }
 
     public String toXML() {
+
             String XML =    "<domain type='%s'>"+ "\n" +
                             "<name>%s</name>"+  "\n" +
                             "<timer name='kvmclock' present='yes'/>" + "\n" +
-                            "<memory unit='KiB'>%s</memory>"+ "\n" +
+                            "<memory unit='bytes'>%s</memory>"+ "\n" +
                             "<vcpu>%s</vcpu>"+ "\n" +
                             "<os>"+ "\n" +
                             "<type arch='%s'>%s</type>"+ "\n" +
@@ -114,23 +125,49 @@ public class VirtualMachine {
                             "<acpi/>" + "\n" +
                             "<apic/>" + "\n" +
                             "</features>" + "\n" +
+                            "<on_poweroff>destroy</on_poweroff>" + "\n" +
+                            "<on_reboot>restart</on_reboot>" + "\n" +
+                            "<on_crash>restart</on_crash>" + "\n" +
                             "<devices>"+ "\n" +
                             "<emulator>/usr/bin/qemu-system-x86_64</emulator>"+ "\n" +
                             "<disk type='file' device='disk'>"+ "\n" +
                             "<driver name='qemu' type='qcow2'/>"+ "\n" +
                             "<source file='%s'/>"+ "\n" +
                             "<target dev='vda' bus='virtio'/>"+ "\n" +
-                            "<boot order='1'/>"+ "\n" +
+                            // "<boot order='1'/>"+ "\n" +
                             "</disk>"+ "\n" +
+
+                            // DISK 2
+                            "<disk type='file' device='disk'>"+ "\n" +
+                            "<source file='%s'/>"+ "\n" +
+                            "<target dev='vdb' bus='virtio'/>"+ "\n" +
+                            "</disk>"+ "\n" +
+
+                            // Network
                             "<interface type='network'>"+ "\n" +
                             "<source network='default'/>"+ "\n" +
                             "<mac address='24:42:53:21:52:45'/>"+ "\n" +
                             "</interface>"+ "\n" +
                             "<graphics type='vnc' port='-1' autoport='yes'/>"+ "\n" +
                             "</devices>"+ "\n" +
+
+                            // quirk? adding console to fix not booting
+                            "<serial type='pty'>" + "\n" +
+                            "<target port='0'/>" + "\n" +
+                            "</serial>" + "\n" +
+                            "<console type='pty'>" + "\n" +
+                            "<target type='serial' port='0'/>" + "\n" +
+                            "</console>" + "\n" +
                             "</domain>";
 
-            return String.format(XML, this.hyperVisor.getType(), this.name, this.ramAmount, this.vCPU, this.arch, this.os, this.VMStorageVolume.getPath());
+
+            String xml = String.format(XML, this.hyperVisor.getType(), this.name, this.ramAmount,
+                                      this.vCPU, this.arch, this.os,
+                                      this.storageVolumes.get(0).getPath(),
+                                      this.storageVolumes.get(1).getPath());
+
+        //System.out.println(xml);
+        return xml;
     }
 
 
@@ -164,5 +201,13 @@ public class VirtualMachine {
 
     public void setArch(String arch) {
         this.arch = arch;
+    }
+
+    public VMUserData getVmUserData() {
+        return vmUserData;
+    }
+
+    public void setVmUserData(VMUserData vmUserData) {
+        this.vmUserData = vmUserData;
     }
 }

@@ -8,16 +8,16 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
+ *     create: define, start, autostart
  *     remove: destroy, then undefine
  * */
 
-public interface PoolALL {
-    VMSpinUp vmSpinUp = VMSpinUp.getInstance();
+public interface PoolAllCommands {
 
     default void poolCreate(VMStoragePool vmStoragePool) {
         String xml = vmStoragePool.toString();
         try {
-            vmSpinUp.connect.storagePoolCreateXML(xml, 0);
+            VMSpinUp.connect.storagePoolCreateXML(xml, 0);
         } catch (LibvirtException e) {
             e.printStackTrace();
         }
@@ -25,8 +25,20 @@ public interface PoolALL {
 
     default void poolDefineXML(VMStoragePool vmStoragePool) {
     }
-    default ArrayList<VMStoragePool> poolList(VMStoragePool vmStoragePool) {
-        return null;
+    default ArrayList<VMStoragePool> poolList(ArrayList<VMStoragePool> vmStoragePool) {
+        String[] pools = null;
+        ArrayList<VMStoragePool> poolList = new ArrayList<>();
+        VMStoragePool storagePool = new VMStoragePool();
+        try {
+            pools = VMSpinUp.connect.listStoragePools();
+           for(String pool : pools) {
+               VMSpinUp.connect.storagePoolLookupByName(pool);
+
+           }
+        } catch (LibvirtException e) {
+            e.printStackTrace();
+        }
+        return poolList;
     }
     default VMStoragePool storagePoolLookupByUUID(UUID uuid) {
         return null;

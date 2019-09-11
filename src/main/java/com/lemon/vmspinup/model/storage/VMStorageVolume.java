@@ -16,7 +16,42 @@ public class VMStorageVolume {
     vpc: VirtualPC disk image format
 
  */
-    private Format DEFAULT_FORMAT = Format.QCOW2;
+    private Format format = Format.QCOW2;
+
+    public VMStorageVolume() {
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isAutostart() {
+        return autostart;
+    }
+
+    public void setAutostart(boolean autostart) {
+        this.autostart = autostart;
+    }
+
+    public Format getFormat() {
+        return format;
+    }
+
+    public void setFormat(Format DEFAULT_FORMAT) {
+        this.format = DEFAULT_FORMAT;
+    }
 
     public static enum Format {
         BOCHS (".bochs"),
@@ -39,9 +74,16 @@ public class VMStorageVolume {
         Format(final String extension) {
             this.extension = extension;
         }
+
+        public String getExtension() {
+            return extension;
+        }
     }
 
     private String path;
+    private String key;
+    private String name;
+    private boolean autostart;
 
     public VMStorageVolume(String path) {
         this.path = path;
