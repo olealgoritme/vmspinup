@@ -41,10 +41,7 @@ public class CmdVmCreate implements Runnable {
                     "disk: " + disk + "\n");
 
             long bytesRam = new ByteCalc().size(ram).to(ByteCalc.SIZE.GIGABYTE);
-            System.out.println("RAM " + ram + "GB -> Bytes: " + bytesRam);
-
             long bytesDisk = new ByteCalc().size(disk).to(ByteCalc.SIZE.GIGABYTE);
-            System.out.println("DISK " + disk + "GB -> Bytes: " + bytesDisk);
 
             VMSpinUp vmSpinUp = VMSpinUp.getInstance();
             VirtualMachine vm = new VirtualMachine();
