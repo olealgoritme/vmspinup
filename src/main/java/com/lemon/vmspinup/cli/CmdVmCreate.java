@@ -61,7 +61,7 @@ public class CmdVmCreate implements Runnable {
             vm.addStorageVolume(vmStorageVolume);
 
             vmStorageVolume = new VMStorageVolume();
-            vmStorageVolume.setPath(App.VM_INSTANCES_PATH + "/" + name + "-user-data.img");
+            vmStorageVolume.setPath(App.VM_INSTANCES_PATH + "/" + "generic-user-data.img");
             vmStorageVolume.setFormat(Format.RAW);
             vm.addStorageVolume(vmStorageVolume);
 
