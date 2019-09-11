@@ -4,7 +4,7 @@ import com.lemon.vmspinup.app.VMSpinUp;
 import com.lemon.vmspinup.model.vm.VirtualMachine;
 import picocli.CommandLine;
 
-@CommandLine.Command(name = "destroy", description = "destroy -- Destroys an Object (vm, pool, storage, network, interface)",
+@CommandLine.Command(name = "destroy", description = "-- Destroys an Object (vm, pool, storage, network, interface)",
         subcommands = {
                 CmdVmDestroy.CmdVmDestroyVM.class
         })

@@ -10,7 +10,7 @@ import picocli.CommandLine;
 import static com.lemon.vmspinup.model.storage.VMStorageVolume.*;
 
 
-@CommandLine.Command(name = "create", description = "create -- Creates an Object (vm, pool, storage, network, interface)",
+@CommandLine.Command(name = "create", description = "-- Creates an Object (vm, pool, storage, network, interface)",
         subcommands = {
             CmdVmCreate.CmdVmCreateVM.class
         })
