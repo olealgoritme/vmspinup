@@ -1,9 +1,6 @@
 <component name="libraryTable">
   <library name="jna-5.4.0-snapshot">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../spinup/lib/jna-5.4.0-snapshot.jar!/" />
-      <root url="jar://$PROJECT_DIR$/../spinup/lib/libvirt-0.1-snapshot.jar!/" />
-    </CLASSES>
+    <CLASSES />
     <JAVADOC />
     <SOURCES />
   </library>

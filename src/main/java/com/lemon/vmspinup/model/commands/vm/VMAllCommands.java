@@ -76,7 +76,8 @@ public interface VMAllCommands {
 
     default boolean vmCreate(VirtualMachine vm) {
             try {
-            VMSpinUp.connect.domainCreateXML(vm.toXML(), 0);
+            Domain domain = VMSpinUp.connect.domainCreateXML(vm.toXML(), 0);
+            addListener(vm, domain);
         } catch (LibvirtException e) {
             e.printStackTrace();
             return false;
