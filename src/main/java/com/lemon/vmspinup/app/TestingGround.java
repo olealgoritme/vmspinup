@@ -2,6 +2,7 @@ package com.lemon.vmspinup.app;
 
 import com.jakewharton.fliptables.FlipTableConverters;
 import com.lemon.vmspinup.cli.CliCommands;
+import com.lemon.vmspinup.error.VMSpinUpException;
 import com.lemon.vmspinup.model.storage.VMStoragePool;
 import com.lemon.vmspinup.model.vm.VirtualMachine;
 import org.libvirt.Domain;
@@ -30,37 +31,45 @@ import java.util.stream.Stream;
 
 public class TestingGround {
 
-private final static String LOGO =
-                "                       ______       _               ______  \n" +
-                "                      / _____)     (_)             | ____ \\ \n" +
-                "   _     _ _  _  _   ( (____  ____  _ ____  _     _| ____) )\n" +
-                "  | |   | | ||_|| |   \\____ \\|  _ \\| |  _ \\| |   | |  ____/ \n" +
-                "   \\ \\ / /| |   | |   _____) ) |_| | | | | | |___| | |      \n" +
-                "    \\___/ |_|   |_|  (______/|  __/|_|_| |_|\\_____/|_|      \n" +
-                "                             |_|                            \n" +
-                "                                                " + "v0.1" + " by xuw";
+    private final static String LOGO =
+            "                       ______       _               ______  \n" +
+                    "                      / _____)     (_)             | ____ \\ \n" +
+                    "   _     _ _  _  _   ( (____  ____  _ ____  _     _| ____) )\n" +
+                    "  | |   | | ||_|| |   \\____ \\|  _ \\| |  _ \\| |   | |  ____/ \n" +
+                    "   \\ \\ / /| |   | |   _____) ) |_| | | | | | |___| | |      \n" +
+                    "    \\___/ |_|   |_|  (______/|  __/|_|_| |_|\\_____/|_|      \n" +
+                    "                             |_|                            \n" +
+                    "                                                " + "v0.1" + " by xuw";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws VMSpinUpException {
 
 
-            // Create Storage Pools
-            // TODO: define storagePools on Initial startup
-            // TODO: build storagePools on Initial startup
-            // TODO: start storagePools on Initial startup
-            // TODO: autostart storagePools on Initial startup
+        // Create Storage Pools
+        // TODO: define storagePools on Initial startup
+        // TODO: build storagePools on Initial startup
+        // TODO: start storagePools on Initial startup
+        // TODO: autostart storagePools on Initial startup
+        try (Stream<Path> walk = Files.walk(Paths.get(String.valueOf(TestingGround.class.getResource("/xml-templates/pool/").getFile())))) {
 
-            try (Stream<Path> walk = Files.walk(Paths.get(Config.TEMPLATE_POOL_PATH))){
+            List<String> result = walk.map(x -> x.toString())
+                    .filter(f -> f.endsWith(".xml")).collect(Collectors.toList());
 
-                List<String> result = walk.map(x -> x.toString())
-                        .filter(f -> f.endsWith(".xml")).collect(Collectors.toList());
-                result.forEach(System.out::println);
-
-                File file = new File(Config.TEMPLATE_POOL_PATH + "/" + result.get(0));
-            } catch (IOException e) {
-                e.printStackTrace();
+            for (String file : result) {
+                String xmlPool = Files.readString(Paths.get(file));
+                StoragePool pool = VMSpinUp.getInstance().connect.storagePoolDefineXML(xmlPool, 0);
+                pool.setAutostart(1);
+                pool.build(0);
+                pool.create(0);
+                // System.out.println(xmlPool);
             }
+            //result.forEach(System.out::println);
 
-            // Spring boot, disabled banner screen
+        } catch (IOException | LibvirtException e) {
+            throw new VMSpinUpException("Couldn't create Storage Pools. Either you already have pools initialized, or check your permissions.");
+        }
+
+
+    // Spring boot, disabled banner screen
             SpringApplication app = new SpringApplication(TestingGround.class);
             app.setBannerMode(Banner.Mode.OFF);
             app.setLogStartupInfo(false);

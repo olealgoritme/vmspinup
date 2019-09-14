@@ -1,5 +1,9 @@
 import com.lemon.vmspinup.app.Config;
+import com.lemon.vmspinup.app.JAXBConvert;
+import com.lemon.vmspinup.app.VMSpinUp;
+import com.lemon.vmspinup.error.VMSpinUpException;
 import com.lemon.vmspinup.xml.storage.Disk;
+import com.lemon.vmspinup.xml.storage.Pool;
 import com.lemon.vmspinup.xml.vm.*;
 import com.lemon.vmspinup.xml.storage.Volume;
 import com.lemon.vmspinup.xml.storage.Target;
@@ -10,14 +14,56 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.libvirt.LibvirtException;
+import org.libvirt.StoragePool;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 
 public class TestXmlConfig {
 
 
+    @Test
+    public void caps() throws VMSpinUpException {
 
-    private void caps() {
+        // Create Storage Pools
+        // TODO: define storagePools on Initial startup
+        // TODO: build storagePools on Initial startup
+        // TODO: start storagePools on Initial startup
+        // TODO: autostart storagePools on Initial startup
+//        getClass().getResource("/textfiles/myfile.txt")
+        //System.out.println("File exists: " + new File(String.valueOf(getClass().getResource("/xml-templates/pool/").getFile())).exists());
 
+        try (Stream<Path> walk = Files.walk(Paths.get(String.valueOf(getClass().getResource("/xml-templates/pool/").getFile())))){
+
+            List<String> result = walk.map(x -> x.toString())
+                    .filter(f -> f.endsWith(".xml")).collect(Collectors.toList());
+
+            for (String file : result) {
+                String xmlPool = Files.readString(Paths.get(file));
+                StoragePool pool = VMSpinUp.getInstance().connect.storagePoolDefineXML(xmlPool, 0);
+                pool.setAutostart(1);
+                pool.build(0);
+                pool.create(0);
+               // System.out.println(xmlPool);
+            }
+            //result.forEach(System.out::println);
+
+
+        } catch (IOException | LibvirtException e) {
+                throw new VMSpinUpException("Couldn't create Storage Pools. Either you already have pools initialized, or check your permissions.");
+        }
     }
+
     @Test
     public void testCaps() throws JAXBException, javax.xml.bind.JAXBException {
 

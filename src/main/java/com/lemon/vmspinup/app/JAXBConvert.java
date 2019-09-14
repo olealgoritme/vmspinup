@@ -47,6 +47,22 @@ public class JAXBConvert {
         }
         return object;
     }
+
+    public String xmlFileToString (File file) {
+        String res;
+        try {
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            //unmarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            res = unmarshaller.unmarshal(file).toString();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return res;
+    }
+
+
+
 }
 
 
