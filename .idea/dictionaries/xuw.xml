@@ -2,6 +2,8 @@
   <dictionary name="xuw">
     <words>
       <w>autostart</w>
+      <w>debian</w>
+      <w>genisoimage</w>
       <w>getk</w>
       <w>hypervisor</w>
     </words>

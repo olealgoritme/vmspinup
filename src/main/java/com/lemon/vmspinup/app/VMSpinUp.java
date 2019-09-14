@@ -1,9 +1,9 @@
 package com.lemon.vmspinup.app;
 
 import com.lemon.vmspinup.error.VMSpinUpException;
-import com.lemon.vmspinup.model.commands.storage.storagepool.PoolAllCommands;
-import com.lemon.vmspinup.model.commands.storage.storagevolume.StorageAllCommands;
-import com.lemon.vmspinup.model.commands.vm.*;
+import com.lemon.vmspinup.cli.commands.storage.storagepool.PoolAllCommands;
+import com.lemon.vmspinup.cli.commands.storage.storagevolume.StorageAllCommands;
+import com.lemon.vmspinup.cli.commands.vm.*;
 import com.lemon.vmspinup.model.hypervisor.HyperVisor;
 import com.lemon.vmspinup.model.hypervisor.HyperVisorType;
 import com.lemon.vmspinup.model.hypervisor.KVM;

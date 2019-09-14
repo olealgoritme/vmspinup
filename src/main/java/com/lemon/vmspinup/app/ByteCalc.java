@@ -28,7 +28,7 @@ public class ByteCalc {
         }
     }
 
-    public ByteCalc size(long size) {
+    public ByteCalc sizeOf(long size) {
         if(size == 0) throw new IllegalArgumentException("Needs size!");
         this.kB = size;
         return ByteCalc.this;

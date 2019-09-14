@@ -1,10 +1,15 @@
-import com.lemon.vmspinup.xml.domain.*;
+import com.lemon.vmspinup.app.Config;
+import com.lemon.vmspinup.xml.storage.Disk;
+import com.lemon.vmspinup.xml.vm.*;
+import com.lemon.vmspinup.xml.storage.Volume;
+import com.lemon.vmspinup.xml.storage.Target;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
 public class TestXmlConfig {
 
@@ -16,9 +21,12 @@ public class TestXmlConfig {
     @Test
     public void testCaps() throws JAXBException, javax.xml.bind.JAXBException {
 
-        LibvirtConfigDomain config = new LibvirtConfigDomain();
+        Domain config = new Domain();
         config.setType("kvm")
-          .setName("debian1");
+                .setName("debian1")
+                .setMemory(24242424)
+                .setMemoryUnit("bytes")
+                .setVcpu(2);
 
         config.getOs()
                 .setType("hvm")
@@ -30,7 +38,16 @@ public class TestXmlConfig {
                 .enableAcpi()
                 .enableApic();
 
-        LibvirtConfigDisk disk = new LibvirtConfigDisk();
+
+        Volume volume = new Volume();
+        volume.setAllocation(10)
+                .setAllocationUnit("G")
+                .setCapacity(10)
+                .setCapacityUnit("G")
+                .setTarget(new Target().setPath(Config.VM_INSTANCES_PATH + "/" + "fucku.img"));
+
+
+        Disk disk = new Disk();
         disk.setDriverName("qemu")
                 .setDriverType("qcow2")
                 .setSourceFile("/home/test.img")
@@ -38,35 +55,39 @@ public class TestXmlConfig {
                 .setTargetDev("vda");
         config.addDisk(disk);
 
-        LibvirtConfigInterface interf = new LibvirtConfigInterface();
-        interf.setType("bridge")
-                .setMacAddress("52:54:00:83:25:2b")
-                .setSourceBridge("virbr0");
-        config.addInterface(interf);
+        disk = new Disk();
+        disk.setDriverName("qemu")
+                .setDriverType("raw")
+                .setSourceFile("/home/test.img")
+                .setTargetBus("virtio")
+                .setTargetDev("vdb");
+        config.addDisk(disk);
 
-        LibvirtConfigSerialConsole serial = new LibvirtConfigSerialConsole();
-        serial.setType("pty")
-                .setTargetPort("0");
-        config.addSerial(serial);
+        Interface iFace = new Interface();
+            iFace
+                .setType(Interface.INTERFACE_TYPE.network)
+                .setSourceNetwork("default");
 
-        LibvirtConfigSerialConsole console = new LibvirtConfigSerialConsole();
+        config.addInterface(iFace);
+
+        SerialConsole console = new SerialConsole();
         console.setType("pty")
                 .setTargetPort("0")
                 .setTargetType("serial");
         config.addConsole(console);
 
-        LibvirtConfigGraphics graphics = new LibvirtConfigGraphics();
+        Graphics graphics = new Graphics();
         graphics.setType("vnc")
                 .setListen("0.0.0.0")
-                .setPort("5900");
+                .setPort("0");
 
         config.addGraphics(graphics);
 
         // marshalling
-        JAXBContext jaxbContext = (JAXBContext) JAXBContext.newInstance(LibvirtConfigDomain.class);
-        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+        JAXBContext context = JAXBContextFactory.createContext(new Class[]{Domain.class}, null);
+        //JAXBContext jaxbContext = (JAXBContext) JAXBContext.newInstance(LibvirtConfigDomain.class);
+        Marshaller jaxbMarshaller = context.createMarshaller();
         jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
         jaxbMarshaller.marshal(config, System.out);
 
     }

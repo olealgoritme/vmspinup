@@ -1,6 +1,0 @@
-<pool type="dir">
-  <name>install-files</name>
-  <target>
-      <path>/mnt/install-files</path>
-  </target>
-</pool>

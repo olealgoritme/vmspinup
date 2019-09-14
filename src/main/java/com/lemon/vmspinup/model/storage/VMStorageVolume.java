@@ -18,6 +18,8 @@ public class VMStorageVolume {
  */
     private Format format = Format.QCOW2;
 
+    private Driver driver = Driver.qemu;
+
     public VMStorageVolume() {
     }
 
@@ -53,19 +55,30 @@ public class VMStorageVolume {
         this.format = DEFAULT_FORMAT;
     }
 
-    public static enum Format {
-        BOCHS (".bochs"),
-        CLOOP(".cloop"),
-        DMG(".dmg"),
-        ISO(".iso"),
-        QED(".qed"),
-        VPC(".vpc"),
-        COW (".cow"),
-        QCOW (".qcow"),
-        QCOW2 (".qcow2"),
-        RAW (".img"),
-        SPARSE (".img"),
-        VMDK (".img");
+    public Driver getDriver() {
+        return driver;
+    }
+
+    public void setDriver(Driver driver) {
+        this.driver = driver;
+    }
+
+    public enum Driver {
+        qemu
+    }
+    public enum Format {
+        BOCHS ("bochs"),
+        CLOOP("loop"),
+        DMG("dmg"),
+        ISO("iso"),
+        QED("qed"),
+        VPC("vpc"),
+        COW ("cow"),
+        QCOW ("qcow"),
+        QCOW2 ("qcow2"),
+        RAW ("img"),
+        SPARSE ("img"),
+        VMDK ("img");
 
         private String extension;
         /**

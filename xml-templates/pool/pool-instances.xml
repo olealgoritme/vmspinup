@@ -1,6 +1,0 @@
-<pool type="dir">
-  <name>instances</name>
-  <target>
-      <path>/mnt/instances</path>
-  </target>
-</pool>

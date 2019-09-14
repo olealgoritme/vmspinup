@@ -1,0 +1,6 @@
+<pool type="dir">
+  <name>iso-files</name>
+  <target>
+      <path>/mnt/install-files/iso</path>
+  </target>
+</pool>

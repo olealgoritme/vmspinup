@@ -1,11 +1,11 @@
 <pool type="netfs">
-  <name>virtimages</name>
+  <name>nfs-share</name>
   <source>
-    <host name="nfs.example.com"/>
-    <directory path="/var/lib/virt/images"/>
+    <host name="192.168.1.197"/>
+    <dir path="/mnt/sharedfolder"/>
   </source>
   <target>
-    <path>/var/lib/virt/images</path>
+    <path>/mnt/nfs-share</path>
     <permissions>
       <mode>0700</mode>
       <owner>0</owner>

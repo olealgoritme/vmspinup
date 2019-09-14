@@ -1,6 +1,6 @@
 package com.lemon.vmspinup.model.vm;
 
-import com.lemon.vmspinup.model.listeners.VMStateListener;
+import com.lemon.vmspinup.listeners.VMStateListener;
 
 public class VirtualMachineCallback implements VMStateListener {
 

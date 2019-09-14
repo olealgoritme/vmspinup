@@ -1,6 +1,6 @@
 <pool type="dir">
   <name>templates</name>
-  <target>
+    <target>
       <path>/mnt/templates</path>
-  </target>
+    </target>
 </pool>

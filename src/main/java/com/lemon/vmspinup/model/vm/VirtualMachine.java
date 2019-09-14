@@ -1,15 +1,16 @@
 package com.lemon.vmspinup.model.vm;
 
+import com.lemon.vmspinup.app.JAXBConvert;
 import com.lemon.vmspinup.app.VMSpinUp;
-import com.lemon.vmspinup.app.VMUserData;
+import com.lemon.vmspinup.cloudinit.CloudInit;
 import com.lemon.vmspinup.model.hypervisor.HyperVisor;
-import com.lemon.vmspinup.model.listeners.VMStateListener;
-import com.lemon.vmspinup.model.storage.VMStoragePool;
+import com.lemon.vmspinup.listeners.VMStateListener;
 import com.lemon.vmspinup.model.storage.VMStorageVolume;
+import com.lemon.vmspinup.xml.storage.Disk;
+import com.lemon.vmspinup.xml.vm.*;
 import org.libvirt.DomainInfo;
-import org.libvirt.LibvirtException;
 
-import java.lang.reflect.Array;
+import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -31,8 +32,8 @@ public class VirtualMachine {
     private String os = "hvm";                                                          // OS name (e.g hvm)
     private String arch = "x86_64";                                                     // OS architecture
     private ArrayList<VMStorageVolume> storageVolumes = new ArrayList<>();              // storage volumes
-    private VMUserData vmUserData = new VMUserData("/mnt/instances/vm/ole1-user-data.img");  // object for VM user-meta-data (used in conjuction with cloudimages to set hostname, networks, passwords etc)
-    private HyperVisor hyperVisor = VMSpinUp.DEFAULT_HYPERVISOR;                           // default HyperVisor type
+    private CloudInit cloudInitConfig;                                                  //
+    private HyperVisor hyperVisor = VMSpinUp.DEFAULT_HYPERVISOR;                        // default HyperVisor type
 
     private VMStateListener vmStateListener;                                            // VM state / event listener
     private DomainInfo.DomainState vmState = DomainInfo.DomainState.VIR_DOMAIN_NOSTATE; // default VM state
@@ -110,9 +111,66 @@ public class VirtualMachine {
         return null;
     }
 
-    public String toXML() {
+    public String toXML() throws JAXBException {
 
-            String XML =    "<domain type='%s'>"+ "\n" +
+        Domain config = new Domain();
+        config.setType( this.hyperVisor.getType())
+                .setName( this.getName() )
+                .setMemory( this.getRamAmount())
+                .setMemoryUnit("bytes")
+                .setVcpu( this.getvCPU() );
+
+        config.getOs()
+                .setType("hvm")
+                .setTypeArch("x86_64")
+                .setTypeMachine("pc-q35-3.1");
+
+        config.getFeatures()
+                .enableAcpi()
+                .enableApic();
+
+
+        Disk disk1 = new Disk();
+        disk1.setDriverName( this.storageVolumes.get(0).getDriver().name())
+                .setBootOrder("1")
+                .setDriverType("qcow2")
+                .setSourceFile(this.storageVolumes.get(0).getPath())
+                .setTargetBus("virtio")
+                .setTargetDev("vda");
+        config.addDisk(disk1);
+
+
+        Disk disk2 = new Disk();
+        disk2.setSourceFile(this.storageVolumes.get(1).getPath())
+                .setBootOrder("2")
+                .setTargetBus("virtio")
+                .setTargetDev("vdb");
+        config.addDisk(disk2);
+
+        Interface iFace = new Interface();
+        iFace
+                .setType(Interface.INTERFACE_TYPE.network)
+                .setSourceNetwork("default");
+
+        config.addInterface(iFace);
+
+        SerialConsole console = new SerialConsole();
+        console.setType("pty")
+                .setTargetPort("0");
+        config.addConsole(console);
+
+        Graphics graphics = new Graphics();
+        graphics.setType("vnc")
+                .setListen("0.0.0.0")
+                .setPort("-1");
+
+        config.addGraphics(graphics);
+
+        // marshalling
+        return new JAXBConvert(new Class[]{Domain.class}).objectToXML(config);
+
+        /*
+        String XML =    "<domain type='%s'>"+ "\n" +
                             "<name>%s</name>"+  "\n" +
                             "<timer name='kvmclock' present='yes'/>" + "\n" +
                             "<memory unit='bytes'>%s</memory>"+ "\n" +
@@ -175,6 +233,8 @@ public class VirtualMachine {
 
         //System.out.println(xml);
         return xml;
+         */
+
     }
 
 
@@ -210,11 +270,11 @@ public class VirtualMachine {
         this.arch = arch;
     }
 
-    public VMUserData getVmUserData() {
-        return vmUserData;
+    public CloudInit getCloudInitConfig() {
+        return cloudInitConfig;
     }
 
-    public void setVmUserData(VMUserData vmUserData) {
-        this.vmUserData = vmUserData;
+    public void setCloudInitConfig(CloudInit cloudInitConfig) {
+        this.cloudInitConfig = cloudInitConfig;
     }
 }

@@ -1,0 +1,6 @@
+<pool type="dir">
+  <name>vm-userdata</name>
+  <target>
+      <path>/mnt/instances/vm-userdata</path>
+  </target>
+</pool>
