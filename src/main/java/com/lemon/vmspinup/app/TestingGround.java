@@ -41,7 +41,7 @@ public class TestingGround {
                     "                             |_|                            \n" +
                     "                                                " + "v0.1" + " by xuw";
 
-    public static void main(String[] args) throws VMSpinUpException {
+    public static void main(String[] args) {
 
 
         // Create Storage Pools
@@ -65,7 +65,7 @@ public class TestingGround {
             //result.forEach(System.out::println);
 
         } catch (IOException | LibvirtException e) {
-            throw new VMSpinUpException("Couldn't create Storage Pools. Either you already have pools initialized, or check your permissions.");
+            //throw new VMSpinUpException("Couldn't create Storage Pools. Either you already have pools initialized, or check your permissions.");
         }
 
 
