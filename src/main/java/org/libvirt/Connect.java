@@ -913,6 +913,7 @@ public class Connect {
         return processError(returnValue).toString();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void finalize() throws LibvirtException {
         close();

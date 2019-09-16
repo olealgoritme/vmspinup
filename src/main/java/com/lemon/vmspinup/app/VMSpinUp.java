@@ -1,6 +1,5 @@
 package com.lemon.vmspinup.app;
 
-import com.lemon.vmspinup.error.VMSpinUpException;
 import com.lemon.vmspinup.cli.commands.storage.storagepool.PoolAllCommands;
 import com.lemon.vmspinup.cli.commands.storage.storagevolume.StorageAllCommands;
 import com.lemon.vmspinup.cli.commands.vm.*;
@@ -8,16 +7,18 @@ import com.lemon.vmspinup.model.hypervisor.HyperVisor;
 import com.lemon.vmspinup.model.hypervisor.HyperVisorType;
 import com.lemon.vmspinup.model.hypervisor.KVM;
 import com.lemon.vmspinup.model.hypervisor.LXC;
-import com.lemon.vmspinup.model.vm.VirtualMachine;
 import org.libvirt.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.libvirt.Library.initEventLoop;
 
 public class VMSpinUp implements VMAllCommands, StorageAllCommands, PoolAllCommands {
 
+
+    private static Logger LOG = LoggerFactory.getLogger(App.class);
     private static VMSpinUp instance;
     public static HyperVisor DEFAULT_HYPERVISOR = KVM.getInstance();
-    private static VirtualMachine vm;
 
     // LV
     public static Connect connect;
@@ -25,20 +26,23 @@ public class VMSpinUp implements VMAllCommands, StorageAllCommands, PoolAllComma
     public static Domain domain;
     private Thread eventThread;
 
-    private VMSpinUp() throws VMSpinUpException {
+    private VMSpinUp() {
 
         connectAuth = new ConnectAuthDefault();
+        String URIString = null;
+
         try {
-            connect = new Connect(DEFAULT_HYPERVISOR.getUriString(), connectAuth, 0);
+            URIString = DEFAULT_HYPERVISOR.getUriString();
+            connect = new Connect(URIString, connectAuth, 0);
             eventThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                    initEventLoop();
                 } catch (LibvirtException e) {
-                    e.printStackTrace();
+                    LOG.error("Can't start EventLoop");
                 } finally {
-                    System.out.println("starting event loop");
+                    LOG.info("Starting EventLoop");
                 }
             }
         });
@@ -47,7 +51,7 @@ public class VMSpinUp implements VMAllCommands, StorageAllCommands, PoolAllComma
 
         } catch (LibvirtException e) {
             e.printStackTrace();
-            throw new VMSpinUpException("Can't connect to HyperVisor" + DEFAULT_HYPERVISOR.getName());
+            LOG.error("Can't connect to HyperVisor: " + DEFAULT_HYPERVISOR.getName() + "@ (" + URIString + ")");
         }
 
     }
@@ -95,13 +99,8 @@ public class VMSpinUp implements VMAllCommands, StorageAllCommands, PoolAllComma
         try {
             if(instance == null || connect == null || !connect.isConnected())
                 instance = new VMSpinUp();
-        } catch (LibvirtException | VMSpinUpException e) {
-            e.printStackTrace();
-            try {
-                instance = new VMSpinUp();
-            } catch (VMSpinUpException ex) {
-                ex.printStackTrace();
-            }
+        } catch (LibvirtException e) {
+            LOG.error("Can't get the virtual daemon");
         }
         return instance;
     }

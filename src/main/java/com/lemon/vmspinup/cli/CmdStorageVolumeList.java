@@ -11,7 +11,7 @@ import picocli.CommandLine;
 import java.util.ArrayList;
 
 
-@CommandLine.Command(name = "volumes", mixinStandardHelpOptions = true, description = "-- Lists Storage Volumes")
+@CommandLine.Command(name = "volumes", description = "-- Lists Storage Volumes")
 
 public class CmdStorageVolumeList implements Runnable {
 

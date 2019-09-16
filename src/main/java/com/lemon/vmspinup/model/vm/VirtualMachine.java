@@ -123,7 +123,7 @@ public class VirtualMachine {
         config.getOs()
                 .setType("hvm")
                 .setTypeArch("x86_64")
-                .setTypeMachine("pc-q35-3.1");
+                .setTypeMachine("q35");
 
         config.getFeatures()
                 .enableAcpi()

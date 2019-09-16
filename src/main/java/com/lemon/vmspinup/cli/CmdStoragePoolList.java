@@ -9,7 +9,7 @@ import picocli.CommandLine;
 import java.util.ArrayList;
 
 
-@CommandLine.Command(name = "pools", mixinStandardHelpOptions = true, description = "-- Lists Storage pools")
+@CommandLine.Command(name = "pools", description = "-- Lists Storage pools")
 
 public class CmdStoragePoolList implements Runnable {
 

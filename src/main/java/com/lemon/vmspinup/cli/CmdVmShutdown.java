@@ -4,7 +4,7 @@ import com.lemon.vmspinup.app.VMSpinUp;
 import com.lemon.vmspinup.model.vm.VirtualMachine;
 import picocli.CommandLine;
 
-@CommandLine.Command(name = "shutdown", mixinStandardHelpOptions = true, description = "-- Shuts down a VM Instance")
+@CommandLine.Command(name = "shutdown", description = "-- Shuts down a VM Instance")
 
 public class CmdVmShutdown implements Runnable {
 

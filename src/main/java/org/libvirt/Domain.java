@@ -35,6 +35,7 @@ import org.libvirt.parameters.typed.TypedParameter;
 /**
  * A virtual machine defined within libvirt.
  */
+@SuppressWarnings("ALL")
 public class Domain {
 
     /**

@@ -1,9 +1,7 @@
 import com.lemon.vmspinup.app.Config;
-import com.lemon.vmspinup.app.JAXBConvert;
 import com.lemon.vmspinup.app.VMSpinUp;
-import com.lemon.vmspinup.error.VMSpinUpException;
+import com.lemon.vmspinup.exception.VMSpinUpException;
 import com.lemon.vmspinup.xml.storage.Disk;
-import com.lemon.vmspinup.xml.storage.Pool;
 import com.lemon.vmspinup.xml.vm.*;
 import com.lemon.vmspinup.xml.storage.Volume;
 import com.lemon.vmspinup.xml.storage.Target;
@@ -17,10 +15,7 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.libvirt.LibvirtException;
 import org.libvirt.StoragePool;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,6 +25,8 @@ import java.util.stream.Stream;
 
 
 public class TestXmlConfig {
+
+
 
 
     @Test

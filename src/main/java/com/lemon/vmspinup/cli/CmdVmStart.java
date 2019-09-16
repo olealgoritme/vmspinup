@@ -4,7 +4,7 @@ import com.lemon.vmspinup.app.VMSpinUp;
 import com.lemon.vmspinup.model.vm.VirtualMachine;
 import picocli.CommandLine;
 
-@CommandLine.Command(name = "start", mixinStandardHelpOptions = true, description = "-- Starts a VM Instance")
+@CommandLine.Command(name = "start", description = "-- Starts a VM Instance")
 
 public class CmdVmStart implements Runnable {
 

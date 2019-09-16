@@ -1,27 +1,21 @@
 package com.lemon.vmspinup.app;
 
-import com.jakewharton.fliptables.FlipTableConverters;
 import com.lemon.vmspinup.cli.CliCommands;
-import com.lemon.vmspinup.error.VMSpinUpException;
-import com.lemon.vmspinup.model.storage.VMStoragePool;
-import com.lemon.vmspinup.model.vm.VirtualMachine;
-import org.libvirt.Domain;
+import com.lemon.vmspinup.ncurses.NCurses;
 import org.libvirt.LibvirtException;
 import org.libvirt.StoragePool;
-import org.libvirt.StorageVol;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import com.lemon.vmspinup.webservice.ResponseController;
 
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,8 +23,10 @@ import java.util.stream.Stream;
 @SpringBootApplication
 @ComponentScan(basePackageClasses= ResponseController.class)
 
-public class TestingGround {
+public class App {
 
+
+    private static Logger LOG = LoggerFactory.getLogger(App.class);
     private final static String LOGO =
             "                       ______       _               ______  \n" +
                     "                      / _____)     (_)             | ____ \\ \n" +
@@ -41,6 +37,7 @@ public class TestingGround {
                     "                             |_|                            \n" +
                     "                                                " + "v0.1" + " by xuw";
 
+
     public static void main(String[] args) {
 
 
@@ -49,7 +46,9 @@ public class TestingGround {
         // TODO: build storagePools on Initial startup
         // TODO: start storagePools on Initial startup
         // TODO: autostart storagePools on Initial startup
-        try (Stream<Path> walk = Files.walk(Paths.get(String.valueOf(TestingGround.class.getResource("/xml-templates/pool/").getFile())))) {
+        boolean havePools = false;
+        LOG.info("Checking Storage Pools...");
+        try (Stream<Path> walk = Files.walk(Paths.get(String.valueOf(App.class.getResource("/xml-templates/pool/").getFile())))) {
 
             List<String> result = walk.map(x -> x.toString())
                     .filter(f -> f.endsWith(".xml")).collect(Collectors.toList());
@@ -57,27 +56,33 @@ public class TestingGround {
             for (String file : result) {
                 String xmlPool = Files.readString(Paths.get(file));
                 StoragePool pool = VMSpinUp.getInstance().connect.storagePoolDefineXML(xmlPool, 0);
-                pool.setAutostart(1);
                 pool.build(0);
                 pool.create(0);
+                pool.setAutostart(1);
                 // System.out.println(xmlPool);
             }
             //result.forEach(System.out::println);
 
         } catch (IOException | LibvirtException e) {
-            //throw new VMSpinUpException("Couldn't create Storage Pools. Either you already have pools initialized, or check your permissions.");
+            havePools = true;//throw new VMSpinUpException("Couldn't create Storage Pools. Either you already have pools initialized, or check your permissions.");
+            LOG.error("Storage Pools: Could not create pools!");
+        } finally {
+            if (havePools) {
+                LOG.info("Storage Pools: OK");
+            } else {
+                LOG.info("Storage Pools: Successfully Created");
+            }
         }
 
+        // Spring boot, disabled banner screen
+        SpringApplication app = new SpringApplication(App.class);
+        app.setBannerMode(Banner.Mode.OFF);
+        app.setLogStartupInfo(false);
+        app.run(args);
 
-    // Spring boot, disabled banner screen
-            SpringApplication app = new SpringApplication(TestingGround.class);
-            app.setBannerMode(Banner.Mode.OFF);
-            app.setLogStartupInfo(false);
-            app.run(args);
+        System.out.println(LOGO);
 
-            System.out.println(LOGO);
 
-            CliCommands.CommandLine();
-
-        }
+        CliCommands.CommandLine();
+    }
 }

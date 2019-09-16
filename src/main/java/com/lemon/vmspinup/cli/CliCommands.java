@@ -6,6 +6,7 @@ import org.jline.reader.impl.LineReaderImpl;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import picocli.CommandLine;
+import picocli.CommandLine.Help.ColorScheme;
 import picocli.shell.jline3.PicocliJLineCompleter;
 
 import java.io.PrintWriter;
@@ -36,6 +37,9 @@ public class CliCommands implements Runnable {
     LineReaderImpl reader;
     PrintWriter out;
 
+    @CommandLine.Spec
+    CommandLine.Model.CommandSpec spec;
+
     private CliCommands() {}
 
     private void setReader(LineReader reader){
@@ -48,12 +52,13 @@ public class CliCommands implements Runnable {
         out.println(new CommandLine(this).getUsageMessage());
     }
 
+
     public static void CommandLine() {
         try {
             // set up the completion
             CliCommands commands = new CliCommands();
             CommandLine cmd = new CommandLine(commands);
-//                        cmd.setColorScheme(CommandLine.Help.defaultColorScheme(CommandLine.Help.Ansi.AUTO));
+            cmd.setColorScheme(CommandLine.Help.defaultColorScheme(CommandLine.Help.Ansi.ON));
 
             Terminal terminal = TerminalBuilder.builder().build();
             LineReader reader = LineReaderBuilder.builder()
@@ -62,7 +67,8 @@ public class CliCommands implements Runnable {
                     .parser(new DefaultParser())
                     .build();
             commands.setReader(reader);
-            String prompt = "vmSpinUp> ";
+
+            String prompt = CommandLine.Help.Ansi.AUTO.string("@|magenta,bold vmSpinUp|@@|green,bold >|@ ");
 
             // start the shell and process input until the user quits with Ctrl-D
             String line;

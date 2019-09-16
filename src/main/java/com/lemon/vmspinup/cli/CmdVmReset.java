@@ -5,7 +5,7 @@ import com.lemon.vmspinup.model.vm.VirtualMachine;
 import picocli.CommandLine;
 
 
-@CommandLine.Command(name = "reset", mixinStandardHelpOptions = true, description = "-- Resets an Object (vm, pool, storage, network, interface)",
+@CommandLine.Command(name = "reset", description = "-- Resets an Object (vm, pool, storage, network, interface)",
     subcommands = {
             CmdVmReset.CmdVmResetVM.class
     })
