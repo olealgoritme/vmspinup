@@ -11,6 +11,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import com.lemon.vmspinup.webservice.ResponseController;
+import picocli.CommandLine;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,7 +29,7 @@ public class App {
 
     private static Logger LOG = LoggerFactory.getLogger(App.class);
     private final static String LOGO =
-            "                       ______       _               ______  \n" +
+                    "                       ______       _               ______  \n" +
                     "                      / _____)     (_)             | ____ \\ \n" +
                     "   _     _ _  _  _   ( (____  ____  _ ____  _     _| ____) )\n" +
                     "  | |   | | ||_|| |   \\____ \\|  _ \\| |  _ \\| |   | |  ____/ \n" +
@@ -63,15 +64,13 @@ public class App {
             }
             //result.forEach(System.out::println);
 
-        } catch (IOException | LibvirtException e) {
-            havePools = true;//throw new VMSpinUpException("Couldn't create Storage Pools. Either you already have pools initialized, or check your permissions.");
-            LOG.error("Storage Pools: Could not create pools!");
+        } catch (LibvirtException | IOException e) {
+            havePools = true;
         } finally {
-            if (havePools) {
+            if (havePools)
                 LOG.info("Storage Pools: OK");
-            } else {
+             else
                 LOG.info("Storage Pools: Successfully Created");
-            }
         }
 
         // Spring boot, disabled banner screen
@@ -80,9 +79,7 @@ public class App {
         app.setLogStartupInfo(false);
         app.run(args);
 
-        System.out.println(LOGO);
-
-
-        CliCommands.CommandLine();
+        // start CLI and display logo
+        CliCommands.CommandLine(LOGO);
     }
 }

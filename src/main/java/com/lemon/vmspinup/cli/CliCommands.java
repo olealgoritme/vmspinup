@@ -37,9 +37,6 @@ public class CliCommands implements Runnable {
     LineReaderImpl reader;
     PrintWriter out;
 
-    @CommandLine.Spec
-    CommandLine.Model.CommandSpec spec;
-
     private CliCommands() {}
 
     private void setReader(LineReader reader){
@@ -53,7 +50,7 @@ public class CliCommands implements Runnable {
     }
 
 
-    public static void CommandLine() {
+    public static void CommandLine(String logo) {
         try {
             // set up the completion
             CliCommands commands = new CliCommands();
@@ -69,6 +66,11 @@ public class CliCommands implements Runnable {
             commands.setReader(reader);
 
             String prompt = CommandLine.Help.Ansi.AUTO.string("@|magenta,bold vmSpinUp|@@|green,bold >|@ ");
+
+
+            // Display logo
+            System.out.println(CommandLine.Help.Ansi.ON.string("@|green,bold " + logo + " |@"));
+
 
             // start the shell and process input until the user quits with Ctrl-D
             String line;
