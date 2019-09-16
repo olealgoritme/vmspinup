@@ -27,7 +27,7 @@ public class CmdVmList implements Runnable {
     private class VMPretty {
         private String ID;
         private String name;
-        private String uptime;
+        private String cpuTime;
         private String cpuCores;
         private String ram;
         private String state;
@@ -38,12 +38,12 @@ public class CmdVmList implements Runnable {
         }
 
 
-        public String getUptime() {
-            return uptime;
+        public String getCpuTime() {
+            return cpuTime;
         }
 
-        public void setUptime(String uptime) {
-            this.uptime = uptime;
+        public void setCpuTime(String cpuTime) {
+            this.cpuTime = cpuTime;
         }
 
         public String getState() {
@@ -131,7 +131,7 @@ public class CmdVmList implements Runnable {
                 pretty.setName(vm.getName());
                 pretty.setUUID(vm.getUUID().toString());
                 pretty.setID(Integer.toString(vm.getID()));
-                pretty.setUptime(TimeCalc.getReadableTime(domainInfo.cpuTime));
+                pretty.setCpuTime(TimeCalc.getReadableTime(domainInfo.cpuTime));
                 pretty.setCpuCores(Integer.toString(domain.getMaxVcpus()));
 
                 pretty.setRam(ByteCalc.humanReadableByteCount(domainInfo.maxMem * 1024, true));
