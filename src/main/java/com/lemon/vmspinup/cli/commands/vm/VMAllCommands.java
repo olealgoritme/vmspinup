@@ -1,213 +1,93 @@
 package com.lemon.vmspinup.cli.commands.vm;
 
 import com.lemon.vmspinup.app.VMSpinUp;
-import com.lemon.vmspinup.listeners.VMStateListener;
-import com.lemon.vmspinup.model.vm.VirtualMachine;
 import org.libvirt.Domain;
-import org.libvirt.DomainInfo;
 import org.libvirt.LibvirtException;
-import org.libvirt.event.DomainEvent;
-import org.libvirt.event.DomainEventType;
-import org.libvirt.event.LifecycleListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
 import java.util.UUID;
 
 public interface VMAllCommands {
 
-    default VirtualMachine createVirtualMachine(Domain domain) throws LibvirtException {
-
-        VirtualMachine vm = new VirtualMachine();
-        vm.setVMState(domain.getEventStatus());
-        vm.setHyperVisor(VMSpinUp.DEFAULT_HYPERVISOR);
-        vm.setUUID(UUID.fromString(domain.getUUIDString()));
-        vm.setID(domain.getID());
-        vm.setName(domain.getName());
-        vm.setvCPU(domain.getMaxVcpus());
-        vm.setRamAmount(domain.getMaxMemory());
-        return vm;
-    }
+    Logger LOG = LoggerFactory.getLogger(VMSpinUp.class);
+    VMSpinUp vmSpinUp = VMSpinUp.getInstance();
 
 
-
-    default void addListener(final VirtualMachine virtualMachine, final Domain domain) {
-
-        VMStateListener listener = virtualMachine.getVMStateListener();
-        LifecycleListener lifecycleListener = new LifecycleListener() {
-            @Override
-            public void onLifecycleChange(Domain d, DomainEvent event) {
-
-                System.out.println("DOMAINEVENT: " + event);
-                if (event.getType() == DomainEventType.DEFINED) {
-                    virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
-                    listener.onCreated(virtualMachine);
-
-                } else if (event.getType() == DomainEventType.STARTED) {
-                    virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
-                    listener.onStarted(virtualMachine);
-
-                } else if (event.getType() == DomainEventType.SUSPENDED) {
-                    virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_PAUSED);
-                    listener.onSuspended(virtualMachine);
-
-                } else if (event.getType() == DomainEventType.RESUMED) {
-                    virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
-                    listener.onResumed(virtualMachine);
-
-                } else if (event.getType() == DomainEventType.SHUTDOWN) {
-                    virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_SHUTDOWN);
-                    listener.onShutdown(virtualMachine);
-
-                } else if (event.getType() == DomainEventType.CRASHED) {
-                    virtualMachine.setVMState(DomainInfo.DomainState.VIR_DOMAIN_NOSTATE);
-                    listener.onCrashed(virtualMachine);
-                }
-            }
-        };
-
+    default Domain vmCreateAndStart(String domainXML) {
+        Domain domain;
         try {
-            domain.addLifecycleListener(lifecycleListener);
-            virtualMachine.setVMStateListener(listener);
-        } catch (LibvirtException e) {
-            e.printStackTrace();
-        }
-    }
-
-    default boolean vmCreate(VirtualMachine vm) {
-            try {
-            Domain domain = VMSpinUp.connect.domainDefineXML(vm.toXML());
+            domain = vmSpinUp.connect.domainDefineXML(domainXML);
             domain.create();
-            addListener(vm, domain);
-        } catch (LibvirtException | JAXBException e) {
-            e.printStackTrace();
-            return false;
-        }
-            return true;
-    }
-    default void vmReset(VirtualMachine vm) {
-        try {
-            VMSpinUp.domain = VMSpinUp.connect.domainLookupByUUID(vm.getUUID());
-            VMSpinUp.domain.reset();
+            domain.setAutostart(true);
         } catch (LibvirtException e) {
-            e.printStackTrace();
+            LOG.error("Could not create domain!");
+            return null;
         }
-    }
-    default void vmCreateFromXML(String xml) {
-        try {
-            VMSpinUp.connect.domainCreateXML(xml, 0);
-        } catch (LibvirtException e) {
-            e.printStackTrace();
-        }
+            return domain;
     }
 
-    default void vmDefine(VirtualMachine vm) {
+    default Domain vmDefineByXML(String domainXML) {
+       Domain domain;
         try {
-            VMSpinUp.connect.domainDefineXML(vm.toXML());
-        } catch (LibvirtException | JAXBException e) {
-            e.printStackTrace();
-        }
-    }
-    default void vmDestroy(VirtualMachine vm) {
-        try {
-            VMSpinUp.domain = VMSpinUp.connect.domainLookupByUUID(vm.getUUID());
-            VMSpinUp.domain.destroy();
+            domain = vmSpinUp.connect.domainDefineXML(domainXML);
         } catch (LibvirtException e) {
-            e.printStackTrace();
+            LOG.error("Could not define domain!");
+            return null;
         }
+        return domain;
     }
-    default void vmResume(VirtualMachine vm) {
-        try {
-            VMSpinUp.domain = VMSpinUp.connect.domainLookupByUUID(vm.getUUID());
-            VMSpinUp.domain.resume();
-        } catch (LibvirtException e) {
-            e.printStackTrace();
-        }
-    }
-    default void vmShutdown(VirtualMachine vm) {
-        try {
-            VMSpinUp.domain = VMSpinUp.connect.domainLookupByUUID(vm.getUUID());
-            VMSpinUp.domain.shutdown();
-        } catch (LibvirtException e) {
-            e.printStackTrace();
-        }
-    }
-    default void vmStart(VirtualMachine vm) {
-        try {
-            VMSpinUp.domain = VMSpinUp.connect.domainLookupByUUID(vm.getUUID());
-            VMSpinUp.connect.domainCreateXML(vm.toXML(), 0);
-        } catch (LibvirtException | JAXBException e) {
-            e.printStackTrace();
-        }
-    }
-    default void vmSuspend(VirtualMachine vm) {
-        try {
-            VMSpinUp.domain = VMSpinUp.connect.domainLookupByUUID(vm.getUUID());
-            VMSpinUp.domain.suspend();
-        } catch (LibvirtException e) {
-            e.printStackTrace();
-        }
-    }
-    default void vmUndefine(VirtualMachine vm) {
-        try {
-            VMSpinUp.domain = VMSpinUp.connect.domainLookupByUUID(vm.getUUID());
-            VMSpinUp.domain.undefine();
-        } catch (LibvirtException e) {
-            e.printStackTrace();
-        }
-    }
-    default ArrayList<VirtualMachine> vmList() {
+
+    default ArrayList<Domain> vmList() {
         int[] ids;
-        ArrayList<VirtualMachine> vmList = new ArrayList<VirtualMachine>();
-        VirtualMachine vm;
+        ArrayList<Domain> domainList = new ArrayList<>();
+        Domain domain;
         try {
 
-            ids = VMSpinUp.connect.listDomains();
+            ids = vmSpinUp.connect.listDomains();
             for (int i : ids) {
-                vm = this.vmLookupByID((i));
-                vmList.add(vm);
+                domain = this.vmLookupByID((i));
+                domainList.add(domain);
             }
 
         } catch (LibvirtException e) {
-            e.printStackTrace();
+            LOG.error("Could not get domain list!");
             return null;
         }
-        return vmList;
+        return domainList;
     }
 
-    default VirtualMachine vmLookupByUUID(UUID uuid) {
-        VirtualMachine vm;
+    default Domain vmLookupByUUID(UUID uuid) {
+        Domain domain;
         try {
-            VMSpinUp.domain = VMSpinUp.connect.domainLookupByUUID(uuid);
-            vm = createVirtualMachine(VMSpinUp.domain);
+            domain = vmSpinUp.connect.domainLookupByUUID(uuid);
         } catch (LibvirtException e) {
-            e.printStackTrace();
+            LOG.error("Could not lookup domain!");
             return null;
         }
-        return vm;
+        return domain;
     }
 
-    default VirtualMachine vmLookupByID(int id) {
-        VirtualMachine vm;
+    default Domain vmLookupByID(int id) {
+        Domain domain;
         try {
-            VMSpinUp.domain = VMSpinUp.connect.domainLookupByID(id);
-            vm = createVirtualMachine(VMSpinUp.domain);
+            domain = vmSpinUp.connect.domainLookupByID(id);
         } catch (LibvirtException e) {
-            e.printStackTrace();
+            LOG.error("Could not lookup domain!");
             return null;
         }
-        return vm;
+        return domain;
     }
-    default VirtualMachine vmLookupByName(String vmName) {
-        VirtualMachine vm;
+    default Domain vmLookupByName(String name) {
+        Domain domain;
         try {
-            VMSpinUp.domain = VMSpinUp.connect.domainLookupByName(vmName);
-            vm = createVirtualMachine(VMSpinUp.domain);
+            domain = vmSpinUp.connect.domainLookupByName(name);
         } catch (LibvirtException e) {
-            e.printStackTrace();
+            LOG.error("Could not lookup domain!");
             return null;
         }
-        return vm;
+        return domain;
     }
 
 }

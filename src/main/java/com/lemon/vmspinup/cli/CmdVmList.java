@@ -109,28 +109,21 @@ public class CmdVmList implements Runnable {
     @Override
     public void run() {
 
-        /*parent.reader.clearScreen();
-
-        String[] banner = new CommandLine(new CmdVmList()).getCommandSpec().usageMessage().header();
-        for (String line : banner) {
-            parent.out.println(CommandLine.Help.Ansi.AUTO.string(line));
-        }
-*/
         VMSpinUp vmSpinUp = VMSpinUp.getInstance();
-        ArrayList<VirtualMachine> vmList = vmSpinUp.vmList();
+        ArrayList<Domain> vmList = vmSpinUp.vmList();
         ArrayList<VMPretty> prettyList = new ArrayList<>();
+        VMPretty pretty;
+        DomainInfo domainInfo;
 
+        for(Domain domain : vmList) {
 
-        for(VirtualMachine vm : vmList) {
-
-            VMPretty pretty = new VMPretty();
             try {
-                Domain domain = vmSpinUp.connect.domainLookupByUUID(vm.getUUID());
-                DomainInfo domainInfo = domain.getInfo();
+                pretty = new VMPretty();
+                domainInfo = domain.getInfo();
 
-                pretty.setName(vm.getName());
-                pretty.setUUID(vm.getUUID().toString());
-                pretty.setID(Integer.toString(vm.getID()));
+                pretty.setName(domain.getName());
+                pretty.setUUID(domain.getUUIDString());
+                pretty.setID(Integer.toString(domain.getID()));
                 pretty.setCpuTime(TimeCalc.getReadableTime(domainInfo.cpuTime));
                 pretty.setCpuCores(Integer.toString(domain.getMaxVcpus()));
 
@@ -146,9 +139,6 @@ public class CmdVmList implements Runnable {
 
         }
 
-        /* DomainInfo df = d.getInfo();
-        parent.out.println("CPUTime = " + df.cpuTime);
-        parent.out.println("state = " + df.state); */
         parent.out.println(FlipTableConverters.fromIterable(prettyList, VMPretty.class));
 
         parent.out.println("\nTotal instances: " + prettyList.size() + "\n");

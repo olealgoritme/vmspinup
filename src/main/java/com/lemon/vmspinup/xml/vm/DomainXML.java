@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "domain")
 @XmlType (name = "", propOrder = {"uuid", "name", "memory", "vcpu", "os", "features", "devices" })
-public class Domain {
+public class DomainXML {
 
     @XmlAttribute(name = "type", required = true)
     private String type;
@@ -36,15 +36,14 @@ public class Domain {
 
     @XmlElement(required = true)
     private Devices devices;
-    
 
-    public Domain() {
+    public DomainXML() {
        os = new OS();
        devices = new Devices();
        features = new Features();
     }
 
-    public Domain setUuid(String uuid) {
+    public DomainXML setUuid(String uuid) {
         this.uuid = uuid;
         return this;
     }
@@ -57,7 +56,7 @@ public class Domain {
         return this.name;
     }
 
-    public Domain setName(String name) {
+    public DomainXML setName(String name) {
         this.name = name;
         return this;
     }
@@ -66,7 +65,7 @@ public class Domain {
         return this.vcpu;
     }
 
-    public Domain setVcpu(int vcpus) {
+    public DomainXML setVcpu(int vcpus) {
         this.vcpu = vcpus;
         return this;
     }
@@ -75,7 +74,7 @@ public class Domain {
         return this.memory;
     }
 
-    public Domain setMemory(long memory) {
+    public DomainXML setMemory(long memory) {
         this.memory = memory;
         return this;
     }
@@ -84,7 +83,7 @@ public class Domain {
         return this.os;
     }
 
-    public Domain setOs(OS os) {
+    public DomainXML setOs(OS os) {
         this.os = os;
         return this;
     }
@@ -93,7 +92,7 @@ public class Domain {
         return this.devices;
     }
 
-    public Domain setDevices(Devices devices) {
+    public DomainXML setDevices(Devices devices) {
         this.devices = devices;
         return this;
     }
@@ -102,32 +101,32 @@ public class Domain {
         return this.features;
     }
 
-    public Domain setFeatures(Features features) {
+    public DomainXML setFeatures(Features features) {
         this.features = features;
         return this;
     }
 
-    public Domain addDisk(Disk disk) {
+    public DomainXML addDisk(Disk disk) {
         this.getDevices().addDisk(disk);
         return this;
     }
   
-    public Domain addInterface(Interface interf) {
+    public DomainXML addInterface(Interface interf) {
         this.getDevices().addInterface(interf);
         return this;
     }
     
-    public Domain addSerial(SerialConsole serial) {
+    public DomainXML addSerial(SerialConsole serial) {
         this.getDevices().addSerial(serial);
         return this;
     }
     
-    public Domain addConsole(SerialConsole console) {
+    public DomainXML addConsole(SerialConsole console) {
         this.getDevices().addSerial(console);
         return this;
     }
 
-    public Domain addGraphics(Graphics graphics) {
+    public DomainXML addGraphics(Graphics graphics) {
         this.getDevices().addGraphics(graphics);
         return this;
     }
@@ -136,7 +135,7 @@ public class Domain {
         return this.type;
     }
 
-    public Domain setType(String type) {
+    public DomainXML setType(String type) {
         this.type = type;
         return this;
     }
@@ -145,7 +144,7 @@ public class Domain {
         return memoryUnit;
     }
 
-    public Domain setMemoryUnit(String memoryUnit) {
+    public DomainXML setMemoryUnit(String memoryUnit) {
         this.memoryUnit = memoryUnit;
         return this;
     }

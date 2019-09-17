@@ -4,7 +4,6 @@ import com.lemon.vmspinup.cli.commands.storage.storagepool.PoolAllCommands;
 import com.lemon.vmspinup.cli.commands.storage.storagevolume.StorageAllCommands;
 import com.lemon.vmspinup.cli.commands.vm.*;
 import com.lemon.vmspinup.model.hypervisor.HyperVisor;
-import com.lemon.vmspinup.model.hypervisor.HyperVisorType;
 import com.lemon.vmspinup.model.hypervisor.KVM;
 import com.lemon.vmspinup.model.hypervisor.LXC;
 import org.libvirt.*;
@@ -18,13 +17,11 @@ public class VMSpinUp implements VMAllCommands, StorageAllCommands, PoolAllComma
 
     private static Logger LOG = LoggerFactory.getLogger(App.class);
     private static VMSpinUp instance;
-    public static HyperVisor DEFAULT_HYPERVISOR = KVM.getInstance();
+    public static HyperVisor DEFAULT_HYPERVISOR;
 
-    // LV
+    // libVirt
     public static Connect connect;
     private static ConnectAuth connectAuth;
-    public static Domain domain;
-    private Thread eventThread;
 
     private VMSpinUp() {
 
@@ -32,20 +29,21 @@ public class VMSpinUp implements VMAllCommands, StorageAllCommands, PoolAllComma
         String URIString = null;
 
         try {
+            DEFAULT_HYPERVISOR = KVM.getInstance();
             URIString = DEFAULT_HYPERVISOR.getUriString();
             connect = new Connect(URIString, connectAuth, 0);
-            eventThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                   initEventLoop();
-                } catch (LibvirtException e) {
-                    LOG.error("Can't start EventLoop");
-                } finally {
-                    LOG.info("Starting EventLoop");
+            Thread eventThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        initEventLoop();
+                    } catch (LibvirtException e) {
+                        LOG.error("Can't start EventLoop");
+                    } finally {
+                        LOG.info("Starting EventLoop");
+                    }
                 }
-            }
-        });
+            });
 
             eventThread.start();
 
@@ -83,7 +81,7 @@ public class VMSpinUp implements VMAllCommands, StorageAllCommands, PoolAllComma
         }
     }
 
-    public static void setHyperVisor(HyperVisorType type) {
+    public static void setHyperVisor(HyperVisor.TYPE type) {
         switch (type) {
             case KVM:
                 DEFAULT_HYPERVISOR = KVM.getInstance();

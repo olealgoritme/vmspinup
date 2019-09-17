@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 public class Graphics {
     @XmlAttribute(name = "type")
-    private String type;
+    private TYPE type;
     
     @XmlAttribute(name = "listen")
     private String listen;
@@ -21,13 +21,26 @@ public class Graphics {
     @XmlAttribute(name = "keymap")
     private String keymap;
 
-    public String getType() {
+    public TYPE getType() {
         return type;
     }
 
-    public Graphics setType(String type) {
+    public Graphics setType(TYPE type) {
         this.type = type;
         return this;
+    }
+
+    public enum TYPE {
+        VNC("vnc"),
+        SPICE("spice");
+
+        TYPE(String type) {
+            this.type = type;
+        }
+        private String type;
+        public String getType() {
+            return this.type;
+        }
     }
 
     public String getListen() {

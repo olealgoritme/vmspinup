@@ -47,6 +47,8 @@ public class App {
         // TODO: build storagePools on Initial startup
         // TODO: start storagePools on Initial startup
         // TODO: autostart storagePools on Initial startup
+
+        VMSpinUp vmSpinUp = VMSpinUp.getInstance();
         boolean havePools = false;
         LOG.info("Checking Storage Pools...");
         try (Stream<Path> walk = Files.walk(Paths.get(String.valueOf(App.class.getResource("/xml-templates/pool/").getFile())))) {
@@ -56,7 +58,7 @@ public class App {
 
             for (String file : result) {
                 String xmlPool = Files.readString(Paths.get(file));
-                StoragePool pool = VMSpinUp.getInstance().connect.storagePoolDefineXML(xmlPool, 0);
+                StoragePool pool = vmSpinUp.connect.storagePoolDefineXML(xmlPool, 0);
                 pool.build(0);
                 pool.create(0);
                 pool.setAutostart(1);
@@ -66,6 +68,7 @@ public class App {
 
         } catch (LibvirtException | IOException e) {
             havePools = true;
+            e.printStackTrace();
         } finally {
             if (havePools)
                 LOG.info("Storage Pools: OK");

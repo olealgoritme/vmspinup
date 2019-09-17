@@ -6,7 +6,6 @@ import org.jline.reader.impl.LineReaderImpl;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import picocli.CommandLine;
-import picocli.CommandLine.Help.ColorScheme;
 import picocli.shell.jline3.PicocliJLineCompleter;
 
 import java.io.PrintWriter;
@@ -22,14 +21,13 @@ import java.io.PrintWriter;
                 CmdExit.class,
                 CmdStoragePoolList.class,
                 CmdStorageVolumeList.class,
-                CmdVmCreate.class,
-                CmdVmDestroy.class,
+                CmdCreate.class,
+                CmdDestroy.class,
                 CmdVmList.class,
-                CmdVmReset.class,
-                CmdVmResume.class,
-                CmdVmShutdown.class,
-                CmdVmStart.class,
-                CmdVmSuspend.class})
+                CmdReset.class,
+                CmdResume.class,
+                CmdShutdown.class,
+                CmdSuspend.class})
 
 
 

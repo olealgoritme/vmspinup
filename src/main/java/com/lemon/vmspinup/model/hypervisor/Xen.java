@@ -6,7 +6,7 @@ public class Xen extends HyperVisor {
 
     private Xen() {
         super();
-        this.name = "XEN";
+        this.name = "xen";
         this.type = "xen";
     }
 

@@ -113,7 +113,7 @@ public class VirtualMachine {
 
     public String toXML() throws JAXBException {
 
-        Domain config = new Domain();
+        DomainXML config = new DomainXML();
         config.setType( this.hyperVisor.getType())
                 .setName( this.getName() )
                 .setMemory( this.getRamAmount())
@@ -149,7 +149,7 @@ public class VirtualMachine {
 
         Interface iFace = new Interface();
         iFace
-                .setType(Interface.INTERFACE_TYPE.network)
+                .setType(Interface.TYPE.NETWORK)
                 .setSourceNetwork("default");
 
         config.addInterface(iFace);
@@ -160,14 +160,14 @@ public class VirtualMachine {
         config.addConsole(console);
 
         Graphics graphics = new Graphics();
-        graphics.setType("vnc")
+        graphics.setType(Graphics.TYPE.VNC)
                 .setListen("0.0.0.0")
                 .setPort("-1");
 
         config.addGraphics(graphics);
 
         // marshalling
-        return new JAXBConvert(new Class[]{Domain.class}).objectToXML(config);
+        return new JAXBConvert(new Class[]{DomainXML.class}).objectToXML(config);
 
         /*
         String XML =    "<domain type='%s'>"+ "\n" +

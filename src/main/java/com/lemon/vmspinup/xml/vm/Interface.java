@@ -11,13 +11,21 @@ import java.io.Serializable;
 @XmlType(propOrder = {"source", "ip", "route" })
 public class Interface implements Serializable {
 
-    public enum INTERFACE_TYPE {
-        network,
-        bridge
+    public enum TYPE {
+        NETWORK("network"),
+        BRIDGE("bridge");
+
+        TYPE(String type) {
+            this.type = type;
+        }
+        private String type;
+        public String getType() {
+            return this.type;
+        }
     }
 
     @XmlAttribute(name = "type")
-    private INTERFACE_TYPE type;
+    private TYPE type;
 
     @XmlPath("mac/@address")
     private String macAddress;
@@ -82,7 +90,7 @@ public class Interface implements Serializable {
         return this.type.name();
     }
 
-    public Interface setType(INTERFACE_TYPE type) {
+    public Interface setType(TYPE type) {
         this.type = type;
         return this;
     }

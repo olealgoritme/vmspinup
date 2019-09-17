@@ -6,6 +6,8 @@
       <w>genisoimage</w>
       <w>getk</w>
       <w>hypervisor</w>
+      <w>libvirt</w>
+      <w>virt</w>
     </words>
   </dictionary>
 </component>

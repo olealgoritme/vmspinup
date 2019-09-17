@@ -4,6 +4,16 @@ import java.net.URI;
 
 public class HyperVisor {
 
+    public enum TYPE {
+        KVM("kvm"),
+        LXC("lxc");
+
+        protected String type;
+        TYPE(String type) {
+            this.type = type;
+        }
+    }
+
      String name;
      String type;
      URI uri;

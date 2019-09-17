@@ -3,6 +3,7 @@ package com.lemon.vmspinup.webservice;
 import com.jakewharton.fliptables.FlipTableConverters;
 import com.lemon.vmspinup.app.VMSpinUp;
 import com.lemon.vmspinup.model.vm.VirtualMachine;
+import org.libvirt.Domain;
 import org.libvirt.DomainInfo;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,9 +34,9 @@ public class ResponseController {
     @RequestMapping("/vmlist")
     public Response vmlist() {
 
-            ArrayList<VirtualMachine> vmList = vmSpinUp.vmList();
+            ArrayList<Domain> vmList = vmSpinUp.vmList();
             assert vmList != null;
-            return new Response(this.createResponseID(), FlipTableConverters.fromIterable(vmList, VirtualMachine.class));
+            return new Response(this.createResponseID(), FlipTableConverters.fromIterable(vmList, Domain.class));
     }
 
     @RequestMapping("/{vmName}/{info}")

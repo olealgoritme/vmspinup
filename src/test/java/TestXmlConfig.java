@@ -29,7 +29,6 @@ public class TestXmlConfig {
 
 
 
-    @Test
     public void caps() throws VMSpinUpException {
 
         // Create Storage Pools
@@ -61,10 +60,9 @@ public class TestXmlConfig {
         }
     }
 
-    @Test
     public void testCaps() throws JAXBException, javax.xml.bind.JAXBException {
 
-        Domain config = new Domain();
+        DomainXML config = new DomainXML();
         config.setType("kvm")
                 .setName("debian1")
                 .setMemory(24242424)
@@ -108,7 +106,7 @@ public class TestXmlConfig {
 
         Interface iFace = new Interface();
             iFace
-                .setType(Interface.INTERFACE_TYPE.network)
+                .setType(Interface.TYPE.NETWORK)
                 .setSourceNetwork("default");
 
         config.addInterface(iFace);
@@ -120,14 +118,14 @@ public class TestXmlConfig {
         config.addConsole(console);
 
         Graphics graphics = new Graphics();
-        graphics.setType("vnc")
+        graphics.setType(Graphics.TYPE.VNC)
                 .setListen("0.0.0.0")
                 .setPort("0");
 
         config.addGraphics(graphics);
 
         // marshalling
-        JAXBContext context = JAXBContextFactory.createContext(new Class[]{Domain.class}, null);
+        JAXBContext context = JAXBContextFactory.createContext(new Class[]{DomainXML.class}, null);
         //JAXBContext jaxbContext = (JAXBContext) JAXBContext.newInstance(LibvirtConfigDomain.class);
         Marshaller jaxbMarshaller = context.createMarshaller();
         jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
