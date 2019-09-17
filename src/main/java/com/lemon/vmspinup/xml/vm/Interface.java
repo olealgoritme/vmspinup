@@ -15,17 +15,18 @@ public class Interface implements Serializable {
         NETWORK("network"),
         BRIDGE("bridge");
 
+        protected String type;
+
         TYPE(String type) {
             this.type = type;
         }
-        private String type;
         public String getType() {
             return this.type;
         }
     }
 
     @XmlAttribute(name = "type")
-    private TYPE type;
+    private String type;
 
     @XmlPath("mac/@address")
     private String macAddress;
@@ -87,10 +88,10 @@ public class Interface implements Serializable {
     private String routeGateway;
 
     public String getType() {
-        return this.type.name();
+        return this.type;
     }
 
-    public Interface setType(TYPE type) {
+    public Interface setType(String type) {
         this.type = type;
         return this;
     }
@@ -110,7 +111,7 @@ public class Interface implements Serializable {
     }
 
     public Interface setSourceBridge(String sourceBridge) {
-        if(this.type.name().equalsIgnoreCase
+        if(this.type.equalsIgnoreCase
                 ("network") || this.sourceNetwork != null)
             throw new IllegalArgumentException("Can't set source.bridge when source.network already set");
 
@@ -143,7 +144,7 @@ public class Interface implements Serializable {
     }
 
     public Interface setSourceNetwork(String sourceNetwork) {
-        if(this.type.name().equalsIgnoreCase
+        if(this.type.equalsIgnoreCase
                 ("bridge") || this.sourceBridge != null)
             throw new IllegalArgumentException("Can't set source.network when source.bridge already set");
         this.sourceNetwork = sourceNetwork;

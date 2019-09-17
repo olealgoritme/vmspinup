@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 public class Graphics {
     @XmlAttribute(name = "type")
-    private TYPE type;
+    private String type;
     
     @XmlAttribute(name = "listen")
     private String listen;
@@ -21,11 +21,11 @@ public class Graphics {
     @XmlAttribute(name = "keymap")
     private String keymap;
 
-    public TYPE getType() {
+    public String getType() {
         return type;
     }
 
-    public Graphics setType(TYPE type) {
+    public Graphics setType(String type) {
         this.type = type;
         return this;
     }
@@ -34,10 +34,11 @@ public class Graphics {
         VNC("vnc"),
         SPICE("spice");
 
+        protected String type;
+
         TYPE(String type) {
             this.type = type;
         }
-        private String type;
         public String getType() {
             return this.type;
         }

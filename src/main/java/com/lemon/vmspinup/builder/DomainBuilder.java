@@ -77,7 +77,7 @@ public final class DomainBuilder {
 
         @Override
         public NameStep withHyperVisor(HyperVisor.TYPE hyperVisor) {
-            domainXML.setType(hyperVisor.name());
+            domainXML.setType(hyperVisor.getType());
             return this;
         }
 
@@ -138,7 +138,7 @@ public final class DomainBuilder {
         public SerialConsoleStep withInterface(Interface.TYPE type) {
 
             Interface iFace = new Interface();
-            iFace.setType(type);
+            iFace.setType(type.getType());
 
                 switch (type) {
                     case NETWORK:
@@ -166,7 +166,7 @@ public final class DomainBuilder {
 
         @Override
         public DomainXML withGraphics(Graphics.TYPE type) {
-            domainXML.addGraphics(new Graphics().setListen("0.0.0.0").setType(type).setPort("-1"));
+            domainXML.addGraphics(new Graphics().setListen("0.0.0.0").setType(type.getType()).setPort("-1"));
             return domainXML;
         }
 

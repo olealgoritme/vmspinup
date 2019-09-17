@@ -9,12 +9,12 @@ virsh pool-define pool-vm-userdata.xml
 
 
 #build
-virsh pool-build pool-cloudimg-files.xml
-virsh pool-build pool-iso-files.xml
-virsh pool-build pool-netfs.xml
-virsh pool-build pool-templates.xml
-virsh pool-build pool-vm-instances.xml
-virsh pool-build pool-vm-userdata.xml
+virsh pool-build pool-cloudimg-files
+virsh pool-build pool-iso-files
+virsh pool-build pool-netfs
+virsh pool-build pool-templates
+virsh pool-build pool-vm-instances
+virsh pool-build pool-vm-userdata
 
 
 #start

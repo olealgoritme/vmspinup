@@ -1,5 +1,6 @@
 package com.lemon.vmspinup.cli;
 
+import com.lemon.vmspinup.cli.commands.vm.VMList;
 import org.jline.reader.*;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.reader.impl.LineReaderImpl;
@@ -23,7 +24,7 @@ import java.io.PrintWriter;
                 CmdStorageVolumeList.class,
                 CmdCreate.class,
                 CmdDestroy.class,
-                CmdVmList.class,
+                VMList.class,
                 CmdReset.class,
                 CmdResume.class,
                 CmdShutdown.class,

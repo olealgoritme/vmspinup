@@ -68,7 +68,7 @@ public class App {
 
         } catch (LibvirtException | IOException e) {
             havePools = true;
-            e.printStackTrace();
+            LOG.error(e.getClass().getName());
         } finally {
             if (havePools)
                 LOG.info("Storage Pools: OK");

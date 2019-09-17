@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.io.StringReader;
 import java.io.StringWriter;
 
 
@@ -35,11 +36,23 @@ public class JAXBConvert {
         return sw.toString();
     }
 
+    public Object xmlToObject (String xml) {
+        Object object;
+        try {
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            //unmarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            object = unmarshaller.unmarshal(new StringReader(xml));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return object;
+    }
     public Object xmlFileToObject (File file) {
         Object object;
         try {
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            unmarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            //unmarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             object = unmarshaller.unmarshal(file);
         } catch (JAXBException e) {
             e.printStackTrace();

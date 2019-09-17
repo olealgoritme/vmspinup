@@ -106,7 +106,7 @@ public class TestXmlConfig {
 
         Interface iFace = new Interface();
             iFace
-                .setType(Interface.TYPE.NETWORK)
+                .setType(Interface.TYPE.NETWORK.getType())
                 .setSourceNetwork("default");
 
         config.addInterface(iFace);
@@ -118,7 +118,7 @@ public class TestXmlConfig {
         config.addConsole(console);
 
         Graphics graphics = new Graphics();
-        graphics.setType(Graphics.TYPE.VNC)
+        graphics.setType(Graphics.TYPE.VNC.getType())
                 .setListen("0.0.0.0")
                 .setPort("0");
 
