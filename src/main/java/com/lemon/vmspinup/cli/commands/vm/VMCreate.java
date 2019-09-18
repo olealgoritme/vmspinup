@@ -4,7 +4,7 @@ import com.lemon.vmspinup.app.ByteCalc;
 import com.lemon.vmspinup.app.Config;
 import com.lemon.vmspinup.app.JAXBConvert;
 import com.lemon.vmspinup.app.VMSpinUp;
-import com.lemon.vmspinup.builder.DomainBuilder;
+import com.lemon.vmspinup.xml.builder.DomainXMLBuilder;
 import com.lemon.vmspinup.cloudinit.CloudInit;
 import com.lemon.vmspinup.cloudinit.CloudInitConfig;
 import com.lemon.vmspinup.cloudinit.CloudInitMetaData;
@@ -69,7 +69,7 @@ public class VMCreate implements Runnable {
                 .setTargetBus("virtio")
                 .setTargetDev("vdb");
 
-        DomainXML config = DomainBuilder.Builder()
+        DomainXML config = DomainXMLBuilder.Builder()
                 .withHyperVisor(HyperVisor.TYPE.KVM)
                 .withName(name)
                 .withCPU(cpus)
@@ -78,12 +78,13 @@ public class VMCreate implements Runnable {
                 .withDisk(disk1).andDisk(disk2)
                 .withInterface(Interface.TYPE.NETWORK)
                 .withConsole(true)
-                .withGraphics(Graphics.TYPE.VNC);
+                .withVNCGraphics().enableWebsocket(true)
+                .build();
 
         // marshalling
         String domainXML = new JAXBConvert(new Class[]{DomainXML.class}).objectToXML(config);
 
-        System.out.println(domainXML);
+        //System.out.println(domainXML);
 
         // create volumes in storage pool, so we have usable disks
         Volume volume1 = new Volume();

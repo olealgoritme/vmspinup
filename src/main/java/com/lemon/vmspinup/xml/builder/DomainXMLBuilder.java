@@ -1,4 +1,4 @@
-package com.lemon.vmspinup.builder;
+package com.lemon.vmspinup.xml.builder;
 
 import com.lemon.vmspinup.model.hypervisor.HyperVisor;
 import com.lemon.vmspinup.xml.storage.Disk;
@@ -6,9 +6,9 @@ import com.lemon.vmspinup.xml.vm.*;
 
 import static com.lemon.vmspinup.xml.vm.Features.*;
 
-public final class DomainBuilder {
+public final class DomainXMLBuilder {
 
-        private DomainBuilder() {
+        private DomainXMLBuilder() {
         }
 
         public static HyperVisorStep Builder() {
@@ -36,12 +36,12 @@ public final class DomainBuilder {
         }
 
         public interface FeaturesStep {
-            AddMoreFeaturesStep withFeature(TYPE feature);
+            AddMoreFeaturesStep withFeature(Features.TYPE feature);
             AddDiskStep withoutFeatures();
         }
 
         public interface AddMoreFeaturesStep extends AddDiskStep {
-            AddMoreFeaturesStep andFeature(TYPE feature);
+            AddMoreFeaturesStep andFeature(Features.TYPE feature);
         }
 
         public interface AddDiskStep {
@@ -55,20 +55,31 @@ public final class DomainBuilder {
         }
 
          public interface SerialConsoleStep {
-            GraphicsStep withConsole(boolean wantConsole);
+            GraphicsStep withConsole(boolean console);
         }
 
         public interface GraphicsStep {
-            DomainXML withGraphics(Graphics.TYPE type);
+            GraphicsWebsocketStep withVNCGraphics();
+            BuildStep withSpiceGraphics();
         }
 
-    private static class DomainSteps implements HyperVisorStep, NameStep, CPUStep, MemoryStep, MemoryUnitsStep, FeaturesStep, AddMoreFeaturesStep, AddDiskStep, AddMoreDisksStep, SerialConsoleStep, GraphicsStep {
+        public interface GraphicsWebsocketStep {
+            BuildStep enableWebsocket(boolean websocket);
+        }
+
+        public interface BuildStep {
+            DomainXML build();
+        }
+
+    private static class DomainSteps implements HyperVisorStep, NameStep, CPUStep, MemoryStep, MemoryUnitsStep, FeaturesStep,
+            AddMoreFeaturesStep, AddDiskStep, AddMoreDisksStep, SerialConsoleStep, GraphicsStep, GraphicsWebsocketStep, BuildStep  {
 
         private DomainXML domainXML;
+        private Graphics graphics;
 
         private DomainSteps() {
-            domainXML = new DomainXML();
             // Standard for every domain
+            domainXML = new DomainXML();
             domainXML.getOs()
                     .setType("hvm")
                     .setTypeArch("x86_64")
@@ -164,12 +175,6 @@ public final class DomainBuilder {
             return this;
         }
 
-        @Override
-        public DomainXML withGraphics(Graphics.TYPE type) {
-            domainXML.addGraphics(new Graphics().setListen("0.0.0.0").setType(type.getType()).setPort("-1"));
-            return domainXML;
-        }
-
         private void addFeature(TYPE feature) {
             switch(feature) {
                 case ACPI:
@@ -184,5 +189,35 @@ public final class DomainBuilder {
             }
         }
 
+        @Override
+        public GraphicsWebsocketStep withVNCGraphics() {
+            graphics = new Graphics();
+            graphics.setListen("0.0.0.0");
+            graphics.setType(Graphics.TYPE.VNC.getType());
+            graphics.setPort("-1");
+            return this;
+        }
+
+        @Override
+        public BuildStep enableWebsocket(boolean wantWebsocket) {
+            graphics.setWebsocket("-1"); // autoport on websocket
+            domainXML.addGraphics(graphics);
+            return this;
+        }
+
+
+        @Override
+        public BuildStep withSpiceGraphics() {
+            graphics = new Graphics();
+            graphics.setListen("0.0.0.0");
+            graphics.setType(Graphics.TYPE.SPICE.getType());
+            graphics.setPort("-1");
+            return this;
+        }
+
+        @Override
+        public DomainXML build() {
+            return domainXML;
+        }
     }
 }

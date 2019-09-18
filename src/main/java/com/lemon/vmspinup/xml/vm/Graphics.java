@@ -11,7 +11,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Graphics {
     @XmlAttribute(name = "type")
     private String type;
-    
+
+    @XmlAttribute(name = "websocket")
+    private String websocket;
+
     @XmlAttribute(name = "listen")
     private String listen;
     
@@ -28,6 +31,14 @@ public class Graphics {
     public Graphics setType(String type) {
         this.type = type;
         return this;
+    }
+
+    public String getWebsocket() {
+        return websocket;
+    }
+
+    public void setWebsocket(String websocket) {
+        this.websocket = websocket;
     }
 
     public enum TYPE {

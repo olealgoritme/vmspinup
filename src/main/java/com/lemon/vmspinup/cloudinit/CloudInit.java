@@ -1,8 +1,5 @@
 package com.lemon.vmspinup.cloudinit;
 
-import com.lemon.vmspinup.cloudinit.CloudInitConfig;
-import com.lemon.vmspinup.cloudinit.CloudInitMetaData;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
