@@ -57,7 +57,7 @@ public class App {
                     .filter(f -> f.endsWith(".xml")).collect(Collectors.toList());
 
             for (String file : result) {
-                String xmlPool = Files.readString(Paths.get(file));
+                String xmlPool = new String (Files.readAllBytes(Paths.get(file)));
                 StoragePool pool = vmSpinUp.connect.storagePoolDefineXML(xmlPool, 0);
                 pool.build(0);
                 pool.create(0);
@@ -80,6 +80,7 @@ public class App {
         SpringApplication app = new SpringApplication(App.class);
         app.setBannerMode(Banner.Mode.OFF);
         app.setLogStartupInfo(false);
+        app.setHeadless(true);
         app.run(args);
 
         // start CLI and display logo

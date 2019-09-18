@@ -45,7 +45,7 @@ public class TestXmlConfig {
                     .filter(f -> f.endsWith(".xml")).collect(Collectors.toList());
 
             for (String file : result) {
-                String xmlPool = Files.readString(Paths.get(file));
+                String xmlPool = new String(Files.readAllBytes(Paths.get(file)));
                 StoragePool pool = VMSpinUp.getInstance().connect.storagePoolDefineXML(xmlPool, 0);
                 pool.setAutostart(1);
                 pool.build(0);
