@@ -23,6 +23,7 @@ import java.io.PrintWriter;
                 CmdStoragePoolList.class,
                 CmdStorageVolumeList.class,
                 CmdCreate.class,
+                CmdStart.class,
                 CmdDestroy.class,
                 VMList.class,
                 CmdReset.class,

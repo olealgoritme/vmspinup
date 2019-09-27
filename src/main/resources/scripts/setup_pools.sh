@@ -1,29 +1,33 @@
 #!/bin/bash
-# Manually create directory pools
+# Automatically directory pools
 # Using /mnt/ as base directory
+# Sets CHOWN to libvirtd's user and kvm group
 # - xuw@2019
-# E.g: ./setup_pool.sh /mnt/templates/xml-templates/
+DIR=("../xml-templates/pool")
+LIBVIRT_USER="libvirt"
+KVM_GROUP="kvm"
+# TODO: set directory permissions to libvirt:kvm/qemu
 
 # define
-virsh pool-define $1pool-cloudimg-files.xml
-virsh pool-define $1pool-iso-files.xml
-virsh pool-define $1pool-templates.xml
-virsh pool-define $1pool-vm-instances.xml
+virsh pool-define $DIR/pool-cloudimg-files.xml
+virsh pool-define $DIR/pool-iso-files.xml
+virsh pool-define $DIR/pool-templates.xml
+virsh pool-define $DIR/pool-vm-instances.xml
 
 # build
-virsh pool-build $1cloudimg-files
-virsh pool-build $1iso-files
-virsh pool-build $1templates
-virsh pool-build $1vm-instances
+virsh pool-build cloudimg-files
+virsh pool-build iso-files
+virsh pool-build templates
+virsh pool-build vm-instances
 
 # start
-virsh pool-start $1pool-cloudimg-files
-virsh pool-start $1pool-iso-files
-virsh pool-start $1pool-templates
-virsh pool-start $1pool-vm-instances
+virsh pool-start cloudimg-files
+virsh pool-start iso-files
+virsh pool-start templates
+virsh pool-start vm-instances
 
 # autostart
-virsh pool-autostart $1cloudimg-files
-virsh pool-autostart $1iso-files
-virsh pool-autostart $1templates
-virsh pool-autostart $1vm-instances
+virsh pool-autostart cloudimg-files
+virsh pool-autostart iso-files
+virsh pool-autostart templates
+virsh pool-autostart vm-instances

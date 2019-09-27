@@ -15,9 +15,16 @@ public interface VMAllCommands {
     VMSpinUp vmSpinUp = VMSpinUp.getInstance();
 
 
+
     default Domain vmCreateAndStart(String domainXML) {
         Domain domain;
         try {
+
+            // TODO: schema validation
+            //  enum virDomainDefineFlags {
+            //  VIR_DOMAIN_DEFINE_VALIDATE	=	1 (0x1; 1 << 0)
+            //  Validate the XML document against schema
+            //  }
             domain = vmSpinUp.connect.domainDefineXML(domainXML);
             domain.create();
             domain.setAutostart(true);
