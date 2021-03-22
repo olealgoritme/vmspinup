@@ -5,7 +5,6 @@ import com.lemon.vmspinup.xml.storage.Disk;
 import com.lemon.vmspinup.xml.vm.*;
 import com.lemon.vmspinup.xml.storage.Volume;
 import com.lemon.vmspinup.xml.storage.Target;
-import org.junit.Test;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -125,7 +124,7 @@ public class TestXmlConfig {
         config.addGraphics(graphics);
 
         // marshalling
-        JAXBContext context = JAXBContextFactory.createContext(new Class[]{DomainXML.class}, null);
+        JAXBContext context = JAXBContext.newInstance(new Class[]{DomainXML.class}, null);
         //JAXBContext jaxbContext = (JAXBContext) JAXBContext.newInstance(LibvirtConfigDomain.class);
         Marshaller jaxbMarshaller = context.createMarshaller();
         jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);

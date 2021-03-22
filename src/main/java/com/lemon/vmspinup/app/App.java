@@ -1,7 +1,6 @@
 package com.lemon.vmspinup.app;
 
 import com.lemon.vmspinup.cli.CliCommands;
-import com.lemon.vmspinup.ncurses.NCurses;
 import org.libvirt.LibvirtException;
 import org.libvirt.StoragePool;
 import org.slf4j.Logger;
@@ -11,7 +10,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import com.lemon.vmspinup.webservice.ResponseController;
-import picocli.CommandLine;
 
 import java.io.IOException;
 import java.nio.file.Files;

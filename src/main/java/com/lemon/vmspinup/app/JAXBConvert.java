@@ -1,10 +1,10 @@
 package com.lemon.vmspinup.app;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -14,9 +14,9 @@ public class JAXBConvert {
 
     private JAXBContext context;
 
-    public JAXBConvert(Class[] classList) {
+    public JAXBConvert(Class<?>[] classList) {
         try {
-            context = JAXBContextFactory.createContext(classList, null);
+            context = JAXBContext.newInstance(classList);
         } catch (JAXBException e) {
             e.printStackTrace();
         }

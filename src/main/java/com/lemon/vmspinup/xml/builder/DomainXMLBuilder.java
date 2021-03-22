@@ -46,7 +46,6 @@ public final class DomainXMLBuilder {
 
         public interface AddDiskStep {
             AddMoreDisksStep withDisk(Disk disk);
-
         }
 
         public interface AddMoreDisksStep {

@@ -2,9 +2,7 @@ package com.lemon.vmspinup.webservice;
 
 import com.jakewharton.fliptables.FlipTableConverters;
 import com.lemon.vmspinup.app.VMSpinUp;
-import com.lemon.vmspinup.model.vm.VirtualMachine;
 import org.libvirt.Domain;
-import org.libvirt.DomainInfo;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,9 +15,7 @@ public class ResponseController {
 
     private final AtomicLong responseIdCounter = new AtomicLong();
 
-    private VirtualMachine vm = null;
     private VMSpinUp vmSpinUp = VMSpinUp.getInstance();
-    private DomainInfo df = null;
 
     @RequestMapping("/")
     public Response root() {
